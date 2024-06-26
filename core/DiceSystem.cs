@@ -102,10 +102,19 @@ public class DiceSystem
 
     public void CheckPlayerStatus(CCSPlayerController plyController)
     {
-        if(!plyController.IsValidPly() || !CheckTeamAndLifeState(plyController) || !CanRoll(plyController))
+        if(!plyController.IsValidPly() || !CheckTeamAndLifeState(plyController) || !CanRoll(plyController) || !HasEnoughMoney(plyController))
             return;
 
         RollAndApplyEffect(plyController);
+    }
+
+    private bool HasEnoughMoney (CCSPlayerController plyController)
+    {
+        if (plyController.InGameMoneyServices is null)  return false;
+
+        int money = plyController.InGameMoneyServices.Account;
+        
+        return money >= _plugin.Config!.MoneyToRoll;
     }
 
     private EffectBase? GetEffectByRoll()
@@ -173,6 +182,11 @@ public class DiceSystem
 
         var plyID = plyController.SteamID;
 
+        if (plyController.InGameMoneyServices is null)  return;
+
+        plyController.InGameMoneyServices.Account -= _plugin.Config!.MoneyToRoll;
+        plyController.RefreshUI();
+
         var plyActiveEffect = RollTheDice.Instance!.EffectManager!.PlyActiveEffect;
         if(plyActiveEffect!.ContainsKey(plyID))
         {
@@ -208,6 +222,8 @@ public class DiceSystem
             return HookResult.Continue;
 
         CCSPlayerController? plyController = @event.Userid;
+        if (plyController == null) return HookResult.Continue;
+
         RemoveOrResetPlyDiceCounter(plyController, false);
 
         return HookResult.Continue;

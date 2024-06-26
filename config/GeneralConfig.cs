@@ -61,5 +61,7 @@ public class GeneralConfig : BasePluginConfig
 
 	[JsonPropertyName("Print roll amount for LocalPlayer")]
 	public bool UnicastRollAmount {get; set;} = true;
-
+	
+	[JsonPropertyName("Money costs to roll")]
+	public int MoneyToRoll {get; set;} = 0;
 }
