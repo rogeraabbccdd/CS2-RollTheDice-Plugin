@@ -16,7 +16,7 @@ public class EffectMoreSpeed : EffectBaseRegular, IEffectParameter
 
     public override void Initialize()
     {
-        RawParameters.Add("speedScaleFactor", "2,0");
+        RawParameters.Add("speedScaleFactor", "2.0");
     }
 
     public override void OnApply(CCSPlayerController? playerController)

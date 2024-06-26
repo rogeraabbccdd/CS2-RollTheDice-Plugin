@@ -19,7 +19,7 @@ public class EffectVampire : EffectBaseEvent<EventPlayerHurt>, IEffectParameter
 
     public override void Initialize()
     {
-        RawParameters.Add("healthScaleFactor", "0,5");
+        RawParameters.Add("healthScaleFactor", "0.5");
 
         var friendlyFire = ConVar.Find("mp_friendlyfire");
         if(friendlyFire is null)

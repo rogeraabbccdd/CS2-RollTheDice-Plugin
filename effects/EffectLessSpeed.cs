@@ -17,7 +17,7 @@ public class EffectLessSpeed : EffectBaseRegular, IEffectParameter
 
     public override void Initialize()
     {
-        RawParameters.Add("speedScaleFactor", "0,5");
+        RawParameters.Add("speedScaleFactor", "0.5");
     }
 
     public override void OnApply(CCSPlayerController? playerController)

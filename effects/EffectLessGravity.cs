@@ -15,7 +15,7 @@ public class EffectLessGravity : EffectBaseRegular, IEffectParameter
 
     public override void Initialize()
     {
-        RawParameters.Add("gravityScaleFactor", "0,5");
+        RawParameters.Add("gravityScaleFactor", "0.5");
     }
 
     public override void OnApply(CCSPlayerController? playerController)

@@ -18,7 +18,7 @@ public class EffectMirrorDamage : EffectBaseEvent<EventPlayerHurt>, IEffectParam
 
     public override void Initialize()
     {
-        RawParameters.Add("reflectedDamageScaleFactor", "0,5");
+        RawParameters.Add("reflectedDamageScaleFactor", "0.5");
 
         var friendlyFire = ConVar.Find("mp_friendlyfire");
         if(friendlyFire is null)

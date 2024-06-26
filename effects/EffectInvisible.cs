@@ -17,7 +17,7 @@ public class EffectInvisible : EffectBaseRegular, IEffectParameter, IEffectTimer
 
     public override void Initialize()
     {
-        RawParameters.Add("durationSeconds", "10,0");
+        RawParameters.Add("durationSeconds", "10");
     }
 
     public override void OnApply(CCSPlayerController? playerController)

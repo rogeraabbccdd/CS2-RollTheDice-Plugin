@@ -18,7 +18,7 @@ public class EffectNoclip : EffectBaseRegular, IEffectParameter, IEffectTimer
 
     public override void Initialize()
     {
-        RawParameters.Add("durationSeconds", "5,0");
+        RawParameters.Add("durationSeconds", "5");
     }
 
     public override void OnApply(CCSPlayerController? playerController)
