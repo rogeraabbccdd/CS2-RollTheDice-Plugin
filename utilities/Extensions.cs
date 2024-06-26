@@ -74,21 +74,16 @@ public static class Extensions
 
     public static void RefreshUI(this CCSPlayerController plyController)
     {
-        if(!plyController.IsValidPly() || plyController is { PlayerPawn.Value: {WeaponServices: null, ItemServices: null} })
-            return;
-
-        string healthshot = "weapon_healthshot";
-
-        plyController.GiveNamedItem(healthshot);
-        foreach(var weapon in plyController.PlayerPawn.Value.WeaponServices!.MyWeapons)
-        {
-            if(weapon == null || weapon.Value == null || weapon.Value.DesignerName == null)
-                continue;
-
-            if(weapon.Value.DesignerName.Contains(healthshot))
-                weapon.Value.Remove();
-        }
-
+        if(!plyController.IsValidPly() ||
+            plyController is { PlayerPawn.Value: {WeaponServices: null, ItemServices: null} } ||
+            plyController.PlayerPawn.Value == null
+        )   return;
+        
+        var setStateChanged = CounterStrikeSharp.API.Utilities.SetStateChanged;
+        setStateChanged(plyController, "CCSPlayerController", "m_pInGameMoneyServices");
+        setStateChanged(plyController.PlayerPawn.Value, "CBaseEntity", "m_iHealth");
+        setStateChanged(plyController.PlayerPawn.Value, "CBaseModelEntity", "m_clrRender");
+        setStateChanged(plyController.PlayerPawn.Value, "CBaseEntity", "m_MoveType");
     }
 
     public static bool IsAlive(this CCSPlayerController plyController)

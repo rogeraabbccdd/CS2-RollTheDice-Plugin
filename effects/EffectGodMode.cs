@@ -68,7 +68,6 @@ public class EffectGodMode : EffectBaseRegular, IEffectParameter, IEffectTimer
         if(plyHealth > plyMaxHealth)
         {
             playerController!.PlayerPawn.Value.Health = plyMaxHealth;
-            playerController.RefreshUI();
         }
 
         playerController.LogChat(GetEffectPrefix() + "Godmode has ended");

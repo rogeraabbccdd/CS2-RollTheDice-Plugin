@@ -1,5 +1,4 @@
-
-using CounterStrikeSharp.API;
+using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Core;
 using Preach.CS2.Plugins.RollTheDiceV2.Core.BaseEffect;
 using Preach.CS2.Plugins.RollTheDiceV2.Utilities;
@@ -38,6 +37,8 @@ public class EffectNoclip : EffectBaseRegular, IEffectParameter, IEffectTimer
             return;
 
         playerController!.PlayerPawn.Value.MoveType = MoveType_t.MOVETYPE_NOCLIP;
+        Schema.SetSchemaValue(playerController!.PlayerPawn.Value.Handle, "CBaseEntity", "m_nActualMoveType", 8);
+        playerController.RefreshUI();
 
         var timerRef = Timers;
         StartTimer(ref timerRef, playerController, durationFl);
@@ -61,5 +62,7 @@ public class EffectNoclip : EffectBaseRegular, IEffectParameter, IEffectTimer
 
         playerController.LogChat(GetEffectPrefix() + "Noclip has ended");
         playerController.PlayerPawn.Value.MoveType = MoveType_t.MOVETYPE_WALK;
+        Schema.SetSchemaValue(playerController!.PlayerPawn.Value.Handle, "CBaseEntity", "m_nActualMoveType", 2);
+		playerController.RefreshUI();
     }
 }
