@@ -11,7 +11,7 @@ public class EffectLooseRandomWeapon : EffectBaseRegular, IEffectParameter
     public override string Description { get; set; } = "You have been disarmed, loosing a randomly choosen weapon: {mark}{0}".__("effect_description_loose_random_weapon");
     public override double Probability { get; set; }  = 3;
     public override bool ShowDescriptionOnRoll { get; set; } = false;
-  public Dictionary<string, string> RawParameters { get; set; } = new();
+    public Dictionary<string, string> RawParameters { get; set; } = new();
 
     public override void Initialize()
     {
@@ -19,6 +19,8 @@ public class EffectLooseRandomWeapon : EffectBaseRegular, IEffectParameter
 
     public override void OnApply(CCSPlayerController? playerController)
     {
+        if (playerController == null || playerController.PlayerPawn.Value is null)  return;
+
         var weaponServices = playerController!.PlayerPawn.Value.WeaponServices;
 
         if(weaponServices == null)

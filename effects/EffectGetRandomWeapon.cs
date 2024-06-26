@@ -60,6 +60,11 @@ public class EffectGetRandomWeapon : EffectBaseRegular, IEffectParameter
         if(RawParameters.Count == 0)
             return;
 
+        if (playerController == null ||
+            playerController.PlayerPawn.Value == null ||
+            playerController.PlayerPawn.Value.ItemServices == null
+        )   return;
+
         var randomEntry = RawParameters
             .Where(entry => entry.Value == "1")
             .OrderBy(_ => Guid.NewGuid())

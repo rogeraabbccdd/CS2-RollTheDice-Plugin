@@ -21,6 +21,8 @@ public class EffectMoreSpeed : EffectBaseRegular, IEffectParameter
 
     public override void OnApply(CCSPlayerController? playerController)
     {
+        if (playerController == null || playerController.PlayerPawn.Value is null)  return;
+        
         if(!RawParameters.TryGetValue("speedScaleFactor", out var speedStr))
             return;
 

@@ -211,6 +211,8 @@ public class DiceSystem
     public HookResult HandlePlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo info)
     {
         CCSPlayerController? plyController = @event.Userid;
+        if (plyController == null)  return HookResult.Continue;
+
         RemoveOrResetPlyDiceCounter(plyController, true);
 
         return HookResult.Continue;

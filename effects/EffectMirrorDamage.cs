@@ -29,6 +29,8 @@ public class EffectMirrorDamage : EffectBaseEvent<EventPlayerHurt>, IEffectParam
 
     public override HookResult OnEvent(EventPlayerHurt @event, GameEventInfo eventInfo)
     {
+        if (@event.Attacker == null || @event.Userid == null || @event.Attacker.PlayerPawn.Value == null) return HookResult.Continue;
+
         CCSPlayerController attackerController = @event.Attacker;
         CCSPlayerController victimController = @event.Userid;
 

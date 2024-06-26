@@ -13,7 +13,7 @@ public static class Log
     private static Dictionary<string, char> Colors = new Dictionary<string, char>()
     {
         { "red", ChatColors.Red },
-        { "darkred", ChatColors.Darkred },
+        { "darkred", ChatColors.DarkRed },
         { "green", ChatColors.Green },
         { "blue", ChatColors.Blue },
         { "darkblue", ChatColors.DarkBlue },

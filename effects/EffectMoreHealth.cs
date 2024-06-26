@@ -21,6 +21,8 @@ public class EffectMoreHealth : EffectBaseRegular, IEffectParameter
 
     public override void OnApply(CCSPlayerController? playerController)
     {
+        if (playerController == null || playerController.PlayerPawn.Value is null)  return;
+
         if(!RawParameters.TryGetValue("healthSummand", out var healthStr))
             return;
 

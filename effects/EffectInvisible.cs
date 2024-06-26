@@ -22,6 +22,8 @@ public class EffectInvisible : EffectBaseRegular, IEffectParameter, IEffectTimer
 
     public override void OnApply(CCSPlayerController? playerController)
     {
+        if (playerController == null || playerController.PlayerPawn.Value is null)  return;
+        
         if(Timers.ContainsKey(playerController!.Handle))
         {
             playerController.LogChat(GetEffectPrefix() + "You already have this effect");
@@ -55,6 +57,7 @@ public class EffectInvisible : EffectBaseRegular, IEffectParameter, IEffectTimer
 
     public void OnTimerEnd(CCSPlayerController playerController)
     {
+        if (playerController == null || playerController.PlayerPawn.Value is null)  return;
         if(!playerController!.IsValidPly())
             return;
 

@@ -20,6 +20,8 @@ public class EffectSuicide : EffectBaseRegular
 
     public override void OnApply(CCSPlayerController? playerController)
     {
+        if (playerController == null || playerController.PlayerPawn.Value is null)  return;
+        
         if(playerController!.PlayerPawn.Value.LifeState != 0)
             return;
 

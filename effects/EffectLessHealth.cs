@@ -20,6 +20,8 @@ public class EffectLessHealth : EffectBaseRegular, IEffectParameter
 
     public override void OnApply(CCSPlayerController? playerController)
     {
+        if (playerController == null || playerController.PlayerPawn.Value is null)  return;
+
         if(!RawParameters.TryGetValue("healthSubtrahend", out var healthStr))
             return;
 

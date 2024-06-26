@@ -73,6 +73,8 @@ public class EffectManager
     public HookResult HandlePlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo info)
     {
         CCSPlayerController? plyController = @event.Userid;
+        if (plyController == null)  return HookResult.Continue;
+
         RemoveOrResetPlyActiveEffects(plyController);
 
         return HookResult.Continue;
@@ -81,6 +83,8 @@ public class EffectManager
     public HookResult HandlePlayerDeath(EventPlayerDeath @event, GameEventInfo info)
     {
         CCSPlayerController? plyController = @event.Userid;
+        if (plyController == null)  return HookResult.Continue;
+
         RemoveOrResetPlyActiveEffects(plyController);
 
         return HookResult.Continue;

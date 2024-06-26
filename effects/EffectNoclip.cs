@@ -23,6 +23,8 @@ public class EffectNoclip : EffectBaseRegular, IEffectParameter, IEffectTimer
 
     public override void OnApply(CCSPlayerController? playerController)
     {
+        if (playerController == null || playerController.PlayerPawn.Value is null)  return;
+        
         if(Timers.ContainsKey(playerController!.Handle))
         {
             playerController.LogChat(GetEffectPrefix() + "You already have this effect");
@@ -53,8 +55,9 @@ public class EffectNoclip : EffectBaseRegular, IEffectParameter, IEffectTimer
 
     public void OnTimerEnd(CCSPlayerController playerController)
     {
-        if(!playerController!.IsValidPly() || !playerController!.IsAlive())
-            return;
+        if(playerController == null || playerController.PlayerPawn.Value == null ||
+            !playerController!.IsValidPly() || !playerController!.IsAlive()
+        )   return;
 
         playerController.LogChat(GetEffectPrefix() + "Noclip has ended");
         playerController.PlayerPawn.Value.MoveType = MoveType_t.MOVETYPE_WALK;

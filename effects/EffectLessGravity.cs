@@ -20,6 +20,8 @@ public class EffectLessGravity : EffectBaseRegular, IEffectParameter
 
     public override void OnApply(CCSPlayerController? playerController)
     {
+        if (playerController == null || playerController.PlayerPawn.Value is null)  return;
+
         if(!RawParameters.TryGetValue("gravityScaleFactor", out var gravityStr))
             return;
 
@@ -32,6 +34,8 @@ public class EffectLessGravity : EffectBaseRegular, IEffectParameter
 
     public override void OnRemove(CCSPlayerController? playerController)
     {
+        if (playerController == null || playerController.PlayerPawn.Value is null)  return;
+
         playerController!.PlayerPawn.Value.GravityScale = 1;
     }
 }

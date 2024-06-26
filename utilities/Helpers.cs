@@ -29,7 +29,8 @@ internal static class Helpers
 
     public static int GetDamageInRangePlyHealth(EventPlayerHurt @event, float scale = 1)
     {
-        CCSPlayerController victimController = @event.Userid;
+        CCSPlayerController? victimController = @event.Userid;
+        if (victimController == null || victimController.PlayerPawn.Value == null)   return 0;
 
         // Count damage that is lower than or equal the victim's health
         float damageAmount = @event.DmgHealth; 
