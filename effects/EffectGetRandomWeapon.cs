@@ -1,4 +1,5 @@
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Utils;
 using Preach.CS2.Plugins.RollTheDiceV2.Core.BaseEffect;
 using Preach.CS2.Plugins.RollTheDiceV2.Utilities;
 
@@ -17,41 +18,44 @@ public class EffectGetRandomWeapon : EffectBaseRegular, IEffectParameter
     {
         RawParameters = new Dictionary<string, string>()
         {
-            { "p250" , "1"  },
-            { "mp9"  , "1"  },
-            { "taser", "1" },
-            { "nova" , "1"  },
-            { "deagle", "1" },
-            { "glock", "1" },
-            { "usp_silencer", "1" },
-            { "hkp2000", "1" },
-            { "fiveseven", "1" },
-            { "tec9", "1" },
-            { "cz75a", "1" },
-            { "revolver", "1" },
-            { "famas", "1" },
-            { "galilar", "1" },
-            { "m4a1", "1" },
-            { "m4a1_silencer", "1" },
-            { "ak47", "1" },
-            { "ssg08", "1" },
-            { "sg556", "1" },
-            { "aug", "1" },
-            { "awp", "1" },
-            { "g3sg1", "1" },
-            { "scar20", "1" },
-            { "mac10", "1" },
-            { "mp7", "1" },
-            { "mp5sd", "1" },
-            { "ump45", "1" },
-            { "p90", "1" },
-            { "bizon", "1" },
-            { "mag7", "1" },
-            { "negev", "1" },
-            { "sawedoff", "1" },
-            { "xm1014", "1" },
-            { "m249", "1" },
-            { "c4", "1" }
+            { "weapon_p250" , "1"  },
+            { "weapon_mp9"  , "1"  },
+            { "weapon_taser", "1" },
+            { "weapon_nova" , "1"  },
+            { "weapon_deagle", "1" },
+            { "weapon_glock", "1" },
+            { "weapon_usp_silencer", "1" },
+            { "weapon_hkp2000", "1" },
+            { "weapon_fiveseven", "1" },
+            { "weapon_tec9", "1" },
+            { "weapon_cz75a", "1" },
+            { "weapon_revolver", "1" },
+            { "weapon_famas", "1" },
+            { "weapon_galilar", "1" },
+            { "weapon_m4a1", "1" },
+            { "weapon_m4a1_silencer", "1" },
+            { "weapon_ak47", "1" },
+            { "weapon_ssg08", "1" },
+            { "weapon_sg556", "1" },
+            { "weapon_aug", "1" },
+            { "weapon_awp", "1" },
+            { "weapon_g3sg1", "1" },
+            { "weapon_scar20", "1" },
+            { "weapon_mac10", "1" },
+            { "weapon_mp7", "1" },
+            { "weapon_mp5sd", "1" },
+            { "weapon_ump45", "1" },
+            { "weapon_p90", "1" },
+            { "weapon_bizon", "1" },
+            { "weapon_mag7", "1" },
+            { "weapon_negev", "1" },
+            { "weapon_sawedoff", "1" },
+            { "weapon_xm1014", "1" },
+            { "weapon_m249", "1" },
+            { "weapon_healthshot", "1" },
+            { "item_kevlar", "1" },
+            { "item_assaultsuit", "1" },
+            { "item_defuser", "1" }
         };
     }
 
@@ -66,14 +70,27 @@ public class EffectGetRandomWeapon : EffectBaseRegular, IEffectParameter
         )   return;
 
         var randomEntry = RawParameters
-            .Where(entry => entry.Value == "1")
+            .Where(
+                entry => 
+                    entry.Value == "1" &&
+                    (entry.Key != "item_defuser" || (entry.Key == "item_defuser" && playerController.Team == CsTeam.CounterTerrorist))
+            )
             .OrderBy(_ => Guid.NewGuid())
             .FirstOrDefault();
 
         if(randomEntry.Key == null)
             return;
 
-        playerController!.GiveNamedItem("weapon_" +randomEntry.Key);
+        if (randomEntry.Key == "item_defuser")
+        {
+            _ = new CCSPlayer_ItemServices(playerController.PlayerPawn.Value.ItemServices.Handle)
+            {
+                HasDefuser = true
+            };
+            
+            CounterStrikeSharp.API.Utilities.SetStateChanged(playerController.PlayerPawn.Value, "CBasePlayerPawn", "m_pItemServices");
+        }
+        else    playerController!.GiveNamedItem(randomEntry.Key);
         PrintDescription(playerController, "effect_description_get_random_weapon", randomEntry.Key);
     }
 
