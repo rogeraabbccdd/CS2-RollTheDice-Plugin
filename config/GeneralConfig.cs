@@ -30,7 +30,7 @@ public class GeneralConfig : BasePluginConfig
 	public bool TsCanRoll {get; set;} = true;
 
 	[JsonPropertyName("CTs can roll")]
-	public bool CTsCanRoll {get; set;} = false;
+	public bool CTsCanRoll {get; set;} = true;
 
 	[JsonPropertyName("Reset effects and roll count for all players at round start")]
 	public bool ResetOnRoundStart {get; set;} = true;
@@ -45,7 +45,7 @@ public class GeneralConfig : BasePluginConfig
 	public bool BroadcastOnRollMessageTerrorists {get; set;} = true;
 
 	[JsonPropertyName("Print roll message for CTs")]
-	public bool BroadcastOnRollMessageCounterTerrorists {get; set;} = false;
+	public bool BroadcastOnRollMessageCounterTerrorists {get; set;} = true;
 
 	[JsonPropertyName("Print plugin command information")]
 	public bool BroadcastPluginCommandInformation {get; set;} = true;
