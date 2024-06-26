@@ -9,11 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CounterStrikeSharp.API" Version="1.0.60"/>
+    <PackageReference Include="CounterStrikeSharp.API" Version="1.0.244" />
   </ItemGroup>
 
   <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
-    <!-- <Copy SourceFiles="./bin/Debug/net7.0/$(ClassName).dll" DestinationFolder="$(DestinationFolder)/$(ClassName)/" /> -->
-    <Copy SourceFiles="./bin/Debug/net7.0/$(ClassName).dll" DestinationFolder="$(DestinationFolderLocal)/$(ClassName)/" />
+    <!-- <Copy SourceFiles="./bin/Debug/net8.0/$(ClassName).dll" DestinationFolder="$(DestinationFolder)/$(ClassName)/" /> -->
+    <Copy SourceFiles="./bin/Debug/net8.0/$(ClassName).dll" DestinationFolder="$(DestinationFolderLocal)/$(ClassName)/" />
   </Target>
 </Project>
