@@ -26,19 +26,26 @@ public class EffectLooseRandomWeapon : EffectBaseRegular, IEffectParameter
         if(weaponServices == null)
             return;
 
-        var randomWeapon = weaponServices.MyWeapons
-            .Where(x => x.Value.DesignerName != "weapon_knife" || !string.IsNullOrEmpty(x.Value.DesignerName))
-            .OrderBy(x => Guid.NewGuid())
-            .First();
+        var randomWeapons = weaponServices.MyWeapons
+            .Where(x => x.Value != null && x.Value.DesignerName != "weapon_knife" && !string.IsNullOrEmpty(x.Value.DesignerName))
+            .OrderBy(x => Guid.NewGuid());
 
-        if(randomWeapon == null || string.IsNullOrEmpty(randomWeapon!.Value.DesignerName))
+        if(randomWeapons == null || randomWeapons.Count() == 0)
         {
             playerController.LogChat(GetEffectPrefix() + "No weapon found to remove");
             return;
         }
 
-        var weaponName = randomWeapon.Value.DesignerName;
-        randomWeapon.Value.Remove();
+        var weaponToRemove = randomWeapons.First();
+
+        if(weaponToRemove == null || weaponToRemove.Value == null || string.IsNullOrEmpty(weaponToRemove!.Value.DesignerName))
+        {
+            playerController.LogChat(GetEffectPrefix() + "No weapon found to remove");
+            return;
+        }
+
+        var weaponName = weaponToRemove.Value.DesignerName;
+        weaponToRemove.Value.Remove();
 
         PrintDescription(playerController, "effect_description_loose_random_weapon", weaponName);
     }
