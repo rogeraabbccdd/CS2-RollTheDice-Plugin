@@ -27,7 +27,12 @@ public class EffectLooseRandomWeapon : EffectBaseRegular, IEffectParameter
             return;
 
         var randomWeapons = weaponServices.MyWeapons
-            .Where(x => x.Value != null && x.Value.DesignerName != "weapon_knife" && !string.IsNullOrEmpty(x.Value.DesignerName))
+            .Where(x => 
+                x.Value != null &&
+                x.Value.DesignerName != "weapon_knife" &&
+                x.Value.DesignerName != "weapon_c4" &&
+                !string.IsNullOrEmpty(x.Value.DesignerName)
+            )
             .OrderBy(x => Guid.NewGuid());
 
         if(randomWeapons == null || randomWeapons.Count() == 0)
