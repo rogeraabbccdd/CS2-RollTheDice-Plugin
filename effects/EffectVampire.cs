@@ -49,6 +49,7 @@ public class EffectVampire : EffectBaseEvent<EventPlayerHurt>, IEffectParameter
 
         // Health less than 1 crashes the server
         attackerController.PlayerPawn.Value.Health += damageAmount;
+        attackerController.RefreshUI(); 
         PrintMessageOnEvent(attackerController, "effect_event_vampire", damageAmount+"", victimName);
 
         return HookResult.Continue;

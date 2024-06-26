@@ -49,6 +49,7 @@ public class EffectMirrorDamage : EffectBaseEvent<EventPlayerHurt>, IEffectParam
         // Health less than 1 crashes the server
         var attackerHealth = attackerController.PlayerPawn.Value.Health;
         attackerController.PlayerPawn.Value.Health = Math.Max(attackerHealth - damageAmount, 1);
+        attackerController.RefreshUI();
         PrintMessageOnEvent(attackerController, "effect_event_mirror_damage", damageAmount+"");
 
         return HookResult.Continue;
