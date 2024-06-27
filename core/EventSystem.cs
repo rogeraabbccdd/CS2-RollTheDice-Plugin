@@ -20,6 +20,7 @@ public class EventSystem
         _plugin.RegisterEventHandler<EventPlayerDeath>(HandlePlayerDeath);
         _plugin.RegisterEventHandler<EventRoundStart>(HandleRoundStart);
         _plugin.RegisterEventHandler<EventPlayerHurt>(HandlePlayerHurt);
+        _plugin.RegisterListener<Listeners.OnTick>(OnGameFrame);
     }
 
     public HookResult HandlePlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo eventInfo)
@@ -51,5 +52,10 @@ public class EventSystem
         _plugin.EffectManager!.HandlePlayerHurt(@event, eventInfo);
 
         return HookResult.Continue;
+    }
+
+    public void OnGameFrame()
+    {
+        _plugin.EffectManager!.OnGameFrame();
     }
 }

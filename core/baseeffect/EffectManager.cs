@@ -1,5 +1,6 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using Preach.CS2.Plugins.RollTheDiceV2.Effects;
 using Preach.CS2.Plugins.RollTheDiceV2.Utilities;
 
 namespace Preach.CS2.Plugins.RollTheDiceV2.Core.BaseEffect;
@@ -111,5 +112,9 @@ public class EffectManager
         return HookResult.Continue;
     }
 
+    public void OnGameFrame ()
+    {
+        EffectThirdPerson.OnGameFrame();
+    }
     #endregion
 }
