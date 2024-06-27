@@ -6,6 +6,8 @@ using CounterStrikeSharp.API.Modules.Events;
 using Preach.CS2.Plugins.RollTheDiceV2;
 using Preach.CS2.Plugins.RollTheDiceV2.Core;
 using Preach.CS2.Plugins.RollTheDiceV2.Core.BaseEffect;
+using System.Runtime.InteropServices;
+using CounterStrikeSharp.API.Modules.Memory;
 
 namespace Preach.CS2.Plugins.RollTheDiceV2.Utilities;
 
@@ -38,5 +40,11 @@ internal static class Helpers
         damageAmount = victimHealth < 0 ? damageAmount+victimHealth : damageAmount;
 
         return (int)(damageAmount*scale);
+    }
+
+    public static string GetModel (nint entity)
+    {
+        var getModel = new VirtualFunctionWithReturn<IntPtr, string>(RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? Signature.GETMODELSIGNATURE_LINUX : Signature.GETMODELSIGNATURE_WINDOWS);
+        return getModel.Invoke(entity);
     }
 }
