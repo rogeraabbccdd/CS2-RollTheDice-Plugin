@@ -84,6 +84,7 @@ public static class Extensions
         setStateChanged(plyController.PlayerPawn.Value, "CBaseEntity", "m_iHealth");
         setStateChanged(plyController.PlayerPawn.Value, "CBaseModelEntity", "m_clrRender");
         setStateChanged(plyController.PlayerPawn.Value, "CBaseEntity", "m_MoveType");
+        setStateChanged(plyController, "CBasePlayerController", "m_iDesiredFOV");
     }
 
     public static bool IsAlive(this CCSPlayerController plyController)
