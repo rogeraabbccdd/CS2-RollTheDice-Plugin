@@ -9,7 +9,7 @@ public class EffectOneHealth : EffectBaseRegular, IEffectParameter
     public override bool Enabled { get; set; } = true;
     public override string PrettyName { get; set; } = "1 HP".__("effect_name_one_health");
     public override string Description { get; set; } = "Your health is 1".__("effect_description_one_health");
-    public override double Probability { get; set; }  = 3;
+    public override double Probability { get; set; }  = 1;
     public override bool ShowDescriptionOnRoll { get; set; } = false;
     public Dictionary<string, string> RawParameters { get; set; } = new();
 

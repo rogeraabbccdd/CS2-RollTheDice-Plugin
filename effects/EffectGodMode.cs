@@ -12,7 +12,7 @@ public class EffectGodMode : EffectBaseRegular, IEffectParameter, IEffectTimer
     public override bool Enabled { get; set; } = true;
     public override string PrettyName { get; set; } = "GodMode".__("effect_name_godmode");
     public override string Description { get; set; } = "Godmode is enabled for {mark}{0}{default} seconds".__("effect_description_godmode");
-    public override double Probability { get; set; }  = 3;
+    public override double Probability { get; set; }  = 1;
     public override bool ShowDescriptionOnRoll { get; set; } = false;
     public Dictionary<string, string> RawParameters { get; set; } = new();
     public Dictionary<IntPtr, CounterStrikeSharp.API.Modules.Timers.Timer> Timers { get; set; } = new();
