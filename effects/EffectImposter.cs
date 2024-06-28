@@ -19,7 +19,7 @@ public class EffectImposter : EffectBaseRegular
     public static Dictionary<CCSPlayerController, string> PlayerModel = new Dictionary<CCSPlayerController, string>();
     public override void Initialize()
     {
-        RawParameters.Add("durationSeconds", "10");
+        RawParameters.Add("durationSeconds", "30");
     }
 
     public override void OnApply(CCSPlayerController? playerController)
