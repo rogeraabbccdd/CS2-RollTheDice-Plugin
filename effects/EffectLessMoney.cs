@@ -31,7 +31,8 @@ public class EffectLessMoney : EffectBaseRegular, IEffectParameter
         if(!int.TryParse(moneyStr, out var moneyInt))
             return;
 
-        playerController.InGameMoneyServices.Account -= moneyInt;
+        var plyMoney = playerController.InGameMoneyServices.Account;
+        playerController.InGameMoneyServices.Account = Math.Max(plyMoney - moneyInt, 0);
         playerController.RefreshUI();
         
         PrintDescription(playerController, "effect_description_less_money", moneyStr);
