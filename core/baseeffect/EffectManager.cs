@@ -115,6 +115,7 @@ public class EffectManager
     public void OnGameFrame ()
     {
         EffectThirdPerson.OnGameFrame();
+        EffectDoubleJump.OnGameFrame();
     }
     #endregion
 }
