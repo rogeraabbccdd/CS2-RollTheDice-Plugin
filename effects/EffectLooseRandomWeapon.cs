@@ -1,3 +1,4 @@
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using Preach.CS2.Plugins.RollTheDiceV2.Core.BaseEffect;
 using Preach.CS2.Plugins.RollTheDiceV2.Utilities;
@@ -28,8 +29,10 @@ public class EffectLooseRandomWeapon : EffectBaseRegular, IEffectParameter
 
         var randomWeapons = weaponServices.MyWeapons
             .Where(x => 
+                x.IsValid == true &&
                 x.Value != null &&
-                x.Value.DesignerName != "weapon_knife" &&
+                !x.Value.DesignerName.Contains("knife") &&
+                !x.Value.DesignerName.Contains("bayonet") &&
                 x.Value.DesignerName != "weapon_c4" &&
                 !string.IsNullOrEmpty(x.Value.DesignerName)
             )
@@ -49,9 +52,10 @@ public class EffectLooseRandomWeapon : EffectBaseRegular, IEffectParameter
             return;
         }
 
-        var weaponName = weaponToRemove.Value.DesignerName;
-        weaponToRemove.Value.Remove();
+        playerController.RemoveItemByDesignerName(weaponToRemove.Value.DesignerName, false);
+        playerController.ExecuteClientCommand("slot3");
 
+        var weaponName = weaponToRemove.Value.DesignerName;
         PrintDescription(playerController, "effect_description_loose_random_weapon", weaponName);
     }
 
