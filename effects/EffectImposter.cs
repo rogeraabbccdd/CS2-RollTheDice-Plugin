@@ -10,7 +10,7 @@ public class EffectImposter : EffectBaseRegular
     public override string PrettyName { get; set; } = "Imposter".__("effect_name_imposter");
     public override string Description { get; set; } = "Your player model has been changed to enemy team for {mark}{0}{default} seconds.".__("effect_description_imposter");
     public override double Probability { get; set; }  = 1;
-    public override bool ShowDescriptionOnRoll { get; set; } = true;
+    public override bool ShowDescriptionOnRoll { get; set; } = false;
     public Dictionary<string, string> RawParameters {get; set;} = new();
     public Dictionary<nint, CounterStrikeSharp.API.Modules.Timers.Timer> Timers { get; set; } = new();
     private const string DEFAULT_T_MODEL = "characters/models/tm_phoenix/tm_phoenix.vmdl";
@@ -54,6 +54,8 @@ public class EffectImposter : EffectBaseRegular
         {
             OnTimerEnd(playerController);
         });
+
+        PrintDescription(playerController, "effect_description_imposter", durationStr);
     }
 
     public override void OnRemove(CCSPlayerController? playerController)
