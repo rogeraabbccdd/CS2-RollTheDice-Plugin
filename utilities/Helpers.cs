@@ -44,7 +44,7 @@ internal static class Helpers
 
     public static string GetModel (nint entity)
     {
-        var getModel = new VirtualFunctionWithReturn<IntPtr, string>(RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? Signature.GETMODELSIGNATURE_LINUX : Signature.GETMODELSIGNATURE_WINDOWS);
+        var getModel = new VirtualFunctionWithReturn<IntPtr, string>(GameData.GetSignature("CBaseModelEntity_GetModel"));
         return getModel.Invoke(entity);
     }
 }
