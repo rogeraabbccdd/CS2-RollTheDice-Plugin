@@ -8,9 +8,9 @@ namespace Preach.CS2.Plugins.RollTheDiceV2.Effects;
 public class EffectGetRandomWeapon : EffectBaseRegular, IEffectParameter
 {
     public override bool Enabled { get; set; } = true;
-    public override string PrettyName { get; set; } = "Get Random Weapon".__("effect_name_get_random_weapon");
-    public override string Description { get; set; } = "You have received a randomly selected weapon: {mark}{0}".__("effect_description_get_random_weapon");
-    public override double Probability { get; set; }  = 3;
+    public override string PrettyName { get; set; } = "Get Random Weapon";
+    public override string TranslationName { get; set; } = "get_random_weapon";
+    public override double Probability { get; set; } = 3;
     public override bool ShowDescriptionOnRoll { get; set; } = false;
     public Dictionary<string, string> RawParameters {get; set; } = new();
 
@@ -91,7 +91,7 @@ public class EffectGetRandomWeapon : EffectBaseRegular, IEffectParameter
             CounterStrikeSharp.API.Utilities.SetStateChanged(playerController.PlayerPawn.Value, "CBasePlayerPawn", "m_pItemServices");
         }
         else    playerController!.GiveNamedItem(randomEntry.Key);
-        PrintDescription(playerController, "effect_description_get_random_weapon", randomEntry.Key);
+        PrintDescription(playerController, TranslationName, randomEntry.Key);
     }
 
     public override void OnRemove(CCSPlayerController? playerController)

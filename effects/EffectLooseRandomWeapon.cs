@@ -8,9 +8,9 @@ namespace Preach.CS2.Plugins.RollTheDiceV2.Effects;
 public class EffectLooseRandomWeapon : EffectBaseRegular, IEffectParameter
 {
     public override bool Enabled {get; set; } = true;
-    public override string PrettyName {get; set; } = "Loose Random Weapon".__("effect_name_loose_random_weapon");
-    public override string Description { get; set; } = "You have been disarmed, loosing a randomly choosen weapon: {mark}{0}".__("effect_description_loose_random_weapon");
-    public override double Probability { get; set; }  = 3;
+    public override string PrettyName {get; set; } = "Loose Random Weapon";
+    public override string TranslationName { get; set; } = "loose_random_weapon";
+    public override double Probability { get; set; } = 3;
     public override bool ShowDescriptionOnRoll { get; set; } = false;
     public Dictionary<string, string> RawParameters { get; set; } = new();
 
@@ -40,7 +40,7 @@ public class EffectLooseRandomWeapon : EffectBaseRegular, IEffectParameter
 
         if(randomWeapons == null || randomWeapons.Count() == 0)
         {
-            playerController.LogChat(GetEffectPrefix() + "No weapon found to remove");
+            playerController.LogChat(GetEffectPrefix() + Log.GetLocalizedText(Log.GetEffectLocale(TranslationName, "failed")));
             return;
         }
 
@@ -48,7 +48,7 @@ public class EffectLooseRandomWeapon : EffectBaseRegular, IEffectParameter
 
         if(weaponToRemove == null || weaponToRemove.Value == null || string.IsNullOrEmpty(weaponToRemove!.Value.DesignerName))
         {
-            playerController.LogChat(GetEffectPrefix() + "No weapon found to remove");
+            playerController.LogChat(GetEffectPrefix() + Log.GetLocalizedText(Log.GetEffectLocale(TranslationName, "failed")));
             return;
         }
 
@@ -56,7 +56,7 @@ public class EffectLooseRandomWeapon : EffectBaseRegular, IEffectParameter
         playerController.ExecuteClientCommand("slot3");
 
         var weaponName = weaponToRemove.Value.DesignerName;
-        PrintDescription(playerController, "effect_description_loose_random_weapon", weaponName);
+        PrintDescription(playerController, TranslationName, weaponName);
     }
 
     public override void OnRemove(CCSPlayerController? playerController)

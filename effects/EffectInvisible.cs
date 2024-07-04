@@ -8,9 +8,9 @@ namespace Preach.CS2.Plugins.RollTheDiceV2.Effects;
 public class EffectInvisible : EffectBaseRegular, IEffectParameter, IEffectTimer
 {
     public override bool Enabled {get; set; } = true;
-    public override string PrettyName {get; set; } = "Invisible".__("effect_name_invisible");
-    public override string Description {get; set; } = "You will be invisible for {mark}{0}{default} seconds".__("effect_description_invisible");
-    public override double Probability { get; set; }  = 1;
+    public override string PrettyName {get; set; } = "Invisible";
+    public override string TranslationName {get; set; } = "invisible";
+    public override double Probability { get; set; } = 1;
     public override bool ShowDescriptionOnRoll { get; set; } = false;
     public Dictionary<string, string> RawParameters { get; set; } = new();
     public Dictionary<nint, CounterStrikeSharp.API.Modules.Timers.Timer> Timers {get; set; } = new();
@@ -26,7 +26,7 @@ public class EffectInvisible : EffectBaseRegular, IEffectParameter, IEffectTimer
         
         if(Timers.ContainsKey(playerController!.Handle))
         {
-            playerController.LogChat(GetEffectPrefix() + "You already have this effect");
+            playerController.LogChat(GetEffectPrefix() + Log.GetLocalizedText("effect_already_applied"));
             return;
         }
 
@@ -41,7 +41,7 @@ public class EffectInvisible : EffectBaseRegular, IEffectParameter, IEffectTimer
 
         var timerRef = Timers;
         StartTimer(ref timerRef, playerController, durationFloat);
-        PrintDescription(playerController, "effect_description_invisible", durationStr);
+        PrintDescription(playerController, TranslationName, durationStr);
     }
 
     public override void OnRemove(CCSPlayerController? playerController)
@@ -64,6 +64,6 @@ public class EffectInvisible : EffectBaseRegular, IEffectParameter, IEffectTimer
         playerController!.PlayerPawn.Value.Render = Color.FromArgb(255,255,255,255);
         playerController.RefreshUI();
         
-        playerController.LogChat(GetEffectPrefix() + "You are visible again");
+        playerController.LogChat(GetEffectPrefix() + Log.GetLocalizedText(Log.GetEffectLocale(TranslationName, "end")));
     }
 }

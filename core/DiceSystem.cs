@@ -2,6 +2,7 @@
 using CounterStrikeSharp.API.Core;
 using Preach.CS2.Plugins.RollTheDiceV2.Utilities;
 using Preach.CS2.Plugins.RollTheDiceV2.Core.BaseEffect;
+using CounterStrikeSharp.API.Modules.Utils;
 
 namespace Preach.CS2.Plugins.RollTheDiceV2.Core;
 public class DiceSystem 
@@ -48,15 +49,13 @@ public class DiceSystem
 
         if(plyRollAmountLeft < 0)
         {
-            plyController.LogChat("You can not roll the dice anymore for this round!"
-                    .__("dice_already_rolled"), LogType.INFO);
+            plyController.LogChat(Log.GetLocalizedText("dice_already_rolled"), LogType.INFO);
 
             return false;
         }
 
         if(plyRollAmountLeft > 0 && _plugin.Config!.UnicastRollAmount)
-            plyController.LogChat($"You have {{mark}}{plyRollAmountLeft}$(default) rolls left for this round!"
-                .__("dice_rolls_left", plyRollAmountLeft+""));
+            plyController.LogChat(Log.GetLocalizedText("dice_rolls_left", plyRollAmountLeft));
 
         return true;
     }
@@ -66,8 +65,7 @@ public class DiceSystem
 
         if(!plyController.PawnIsAlive)
         {
-            plyController.LogChat("You can not roll the dice while dead!"
-                    .__("dice_cant_roll_dead"), LogType.INFO);
+            plyController.LogChat(Log.GetLocalizedText("dice_cant_roll_dead"), LogType.INFO);
 
             return false;
         }
@@ -78,21 +76,25 @@ public class DiceSystem
         var teamName = "";
         switch(plyController.TeamNum)
         {
+            case 1:
+                teamName = "spec";
+                break;
             case 2: 
-                    teamName = "Terrorist";
+                teamName = "t";
                 break;
             case 3: 
-                    teamName = "Counter Terrorist";
+                teamName = "ct";
                 break;
             default:
-                    teamName = "Unknown";
+                teamName = "unknown";
                 break;
         }
 
         if(!canTRoll && plyController.TeamNum == 2 || !canCTRoll && plyController.TeamNum == 3)
         {
-            plyController.LogChat($"You can not roll as a {{mark}}{teamName}"
-                .__("dice_wrong_team", teamName), LogType.INFO);
+            plyController.LogChat(
+                Log.GetLocalizedText("dice_wrong_team" + teamName, Log.GetLocalizedText("team_" + teamName))
+            , LogType.INFO);
 
             return false;
         }
@@ -142,15 +144,13 @@ public class DiceSystem
         bool broadcastMessageTerrorists = _plugin.Config!.BroadcastOnRollMessageTerrorists;
         bool broadcastMessageCounterTerrorists = _plugin.Config!.BroadcastOnRollMessageCounterTerrorists;
 
-        var broadcastRollMessage = $"{{mark}}{target.PlayerName}{{default}} rolled a {{mark}}{effect.RollNumber}{{mark}} and got {{mark}}{effect.PrettyName}"
-                .__("dice_rolled_broadcast", target.PlayerName, effect.RollNumber+"", effect.PrettyName);
+        var broadcastRollMessage = Log.GetLocalizedText("dice_rolled_broadcast", target.PlayerName, effect.RollNumber+"", Log.GetLocalizedText(Log.GetEffectLocale(effect.TranslationName, "name")));
 
         Log.PrintServerConsole(broadcastRollMessage, LogType.INFO);
 
         if(localMessage)
         {
-            target.LogChat($"You rolled a {{mark}}{effect.RollNumber}{{default}} and got {{mark}}{effect.PrettyName}"
-                    .__("dice_rolled_local", effect.RollNumber+"", effect.PrettyName));
+            target.LogChat(Log.GetLocalizedText("dice_rolled_local", effect.RollNumber+"", Log.GetLocalizedText(Log.GetEffectLocale(effect.TranslationName, "name"))));
         }
 
         if(broadcastMessage || (broadcastMessageTerrorists && broadcastMessageCounterTerrorists))
@@ -204,7 +204,7 @@ public class DiceSystem
             regularEffect.OnApply(plyController);
 
         if(effect.ShowDescriptionOnRoll)
-            plyController.LogChat(effect.GetEffectPrefix() + effect.Description, LogType.DEFAULT);
+            plyController.LogChat(effect.GetEffectPrefix() + Log.GetLocalizedText(Log.GetEffectLocale(effect.TranslationName, "description")), LogType.DEFAULT);
     }
 
     #region Hooks
@@ -234,7 +234,17 @@ public class DiceSystem
     public HookResult HandleRoundStart(EventRoundStart @event, GameEventInfo info)
     {
         if(_plugin.Config!.BroadcastPluginCommandInformation)
-            Log.PrintChatAll("Enter {blue}!dice{default} in chat to roll the dice!".__("dice_notify_round_start"), LogType.DEFAULT);
+
+        foreach (CCSPlayerController player in CounterStrikeSharp.API.Utilities.GetPlayers())
+        {
+            var team = player.Team;
+            if (
+                (team == CsTeam.CounterTerrorist && _plugin.Config!.CTsCanRoll) ||
+                (team == CsTeam.Terrorist && _plugin.Config!.TsCanRoll)
+            ) {
+                Log.PrintChat(player, Log.GetLocalizedText("dice_notify_round_start"), LogType.DEFAULT);
+            }
+        }
 
         if(!_plugin.Config!.ResetOnRoundStart)
             return HookResult.Continue;

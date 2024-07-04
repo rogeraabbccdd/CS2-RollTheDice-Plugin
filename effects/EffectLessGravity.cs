@@ -7,9 +7,9 @@ namespace Preach.CS2.Plugins.RollTheDiceV2.Effects;
 public class EffectLessGravity : EffectBaseRegular, IEffectParameter
 {
     public override bool Enabled { get; set; } = true;
-    public override string PrettyName { get; set; } = "Less Gravity".__("effect_name_less_gravity");
-    public override string Description { get; set; } = "Your gravity is reduced by {mark}{0}".__("effect_description_less_gravity");
-    public override double Probability { get; set; }  = 2;
+    public override string PrettyName { get; set; } = "Less Gravity";
+    public override string TranslationName { get; set; } = "less_gravity";
+    public override double Probability { get; set; } = 2;
     public override bool ShowDescriptionOnRoll { get; set; } = false;
     public Dictionary<string, string> RawParameters { get; set; } = new();
 
@@ -29,7 +29,7 @@ public class EffectLessGravity : EffectBaseRegular, IEffectParameter
             return;
 
         playerController!.PlayerPawn.Value.GravityScale *= gravityFloat;
-        PrintDescription(playerController, "effect_description_less_gravity", ((1-gravityFloat)*100f)+"%");
+        PrintDescription(playerController, TranslationName, ((1-gravityFloat)*100f)+"%");
     }
 
     public override void OnRemove(CCSPlayerController? playerController)

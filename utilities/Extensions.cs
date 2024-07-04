@@ -28,6 +28,13 @@ public static class Extensions
 
         Log.PrintCenter(plyController, message, type);
     }
+    public static void LogCenterHtml(this CCSPlayerController plyController, string message, LogType? type = LogType.DEFAULT)
+    {
+        if(!plyController.IsValidPly())
+            return;
+
+        Log.PrintCenterHtml(plyController, message, type);
+    }
 
     public static void AddEffect(this CCSPlayerController plyController, EffectBase effect)
     {
@@ -91,22 +98,5 @@ public static class Extensions
     public static bool IsAlive(this CCSPlayerController plyController)
     {
         return plyController is { IsValid: true, PawnIsAlive: true };
-    }
-
-    public static string __(this string val, string translateKey, params string[] args)
-    {
-        // Check if TranslationData is valid
-        var translationConfig = RollTheDice.Instance!.TranslationConfig!.TranslationData;
-        if(translationConfig == null)
-            return val;
-
-        var translation = translationConfig.GetTranslation(translateKey, args);
-        if(translation == null)
-        {
-            translationConfig.Data.Add(translateKey, val);
-            return val;
-        }
-        
-        return translation;
     }
 }

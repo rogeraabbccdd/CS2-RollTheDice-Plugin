@@ -1,76 +1,70 @@
-using System.Drawing;
-using System.Text.RegularExpressions;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
+using System.Reflection;
 
 namespace Preach.CS2.Plugins.RollTheDiceV2.Utilities;
 
 public static class Log 
 {
-    private static string Prefix => "[{red}RollTheDice{default}]";
-
-    private static Dictionary<string, char> Colors = new Dictionary<string, char>()
-    {
-        { "red", ChatColors.Red },
-        { "darkred", ChatColors.DarkRed },
-        { "green", ChatColors.Green },
-        { "blue", ChatColors.Blue },
-        { "darkblue", ChatColors.DarkBlue },
-        { "yellow", ChatColors.Yellow },
-        { "magenta", ChatColors.Magenta },
-        { "white", ChatColors.White },
-        { "default", ChatColors.Default },
-        { "mark", ChatColors.Blue },
-        { "mark2", ChatColors.Lime }
-    };
+    private static string Prefix => GetLocalizedText("prefix");
 
     private static string GetLogTypePrefix(LogType? type)
     {
         return type switch 
         {
             LogType.DEFAULT => "",
-            LogType.SUCCSS => "{green}[SUCCESS]{default}",
-            LogType.INFO => "{blue}[INFO]{default}",
-            LogType.WARNING => "{yellow}[WARNING]{default}",
-            LogType.ERROR => "{red}[ERROR]{default}",
-            LogType.DEBUG => "{magenta}[DEBUG]{default}",
+            LogType.SUCCSS => $"{ChatColors.Green}[SUCCESS]{default}",
+            LogType.INFO => $"{ChatColors.Blue}[INFO]{default}",
+            LogType.WARNING => $"{ChatColors.Yellow}[WARNING]{default}",
+            LogType.ERROR => $"{ChatColors.Red}[ERROR]{default}",
+            LogType.DEBUG => $"{ChatColors.Magenta}[DEBUG]{default}",
             _ => ""
         };
     }
 
-    private static string ReplaceColorCodes(string input, bool removeColorCode = false)
+    private static string GetLogTypePrefixHtml(LogType? type)
     {
-        string pattern = @"\{(\w+)*\}";
-        Regex regex = new Regex(pattern);
-
-        return regex.Replace(input, match =>
+        return type switch 
         {
-            string colorName = match.Groups[1].Value.ToLower();
-            if (Colors.ContainsKey(colorName))
-            {
-                return !removeColorCode ? Colors[colorName].ToString() : "";
-            }
-            else
-            {
-                return !removeColorCode ? Colors["default"].ToString() : "";
-            }
-        });
+            LogType.DEFAULT => "",
+            LogType.SUCCSS => "<font color=\"green\">SUCCESS</font>",
+            LogType.INFO => "<font color=\"blue\">INFO</font>",
+            LogType.WARNING => "<font color=\"yellow\">WARNING</font>",
+            LogType.ERROR => "<font color=\"red\">ERROR</font>",
+            LogType.DEBUG => "<font color=\"magenta\">DEBUG</font>",
+            _ => ""
+        };
+    }
+
+    // Clean all colors in message, taken from:
+    // https://discord.com/channels/1160907911501991946/1175947333880524962/1236581641036759044
+    private static readonly Dictionary<string, char> PredefinedColors = typeof(ChatColors)
+        .GetFields(BindingFlags.Public | BindingFlags.Static)
+        .ToDictionary(field => $"{{{field.Name}}}", field => (char)(field.GetValue(null) ?? '\x01'));
+    private static string RemoveColorCodes(string input)
+    {
+        return PredefinedColors.Aggregate(input, (current, color) => current.Replace(color.Key, "").Replace(color.Value.ToString(), ""));
     }
 
     private static string GetFormatedText(string message, LogType? type = LogType.DEFAULT, bool replaceColorsEmpty = false)
     {
         var formatedLog = Prefix + GetLogTypePrefix(type) + " " + message;
 
-        if(replaceColorsEmpty)
-            return ReplaceColorCodes(formatedLog, true);
-
-        return ReplaceColorCodes(formatedLog);
+        return replaceColorsEmpty ? RemoveColorCodes(formatedLog) : formatedLog;
+    }
+    private static string GetFormatedHtml(string message, LogType? type = LogType.DEFAULT)
+    {
+        return GetLogTypePrefixHtml(type) + " " + message;
     }
 
     public static void PrintCenter(CCSPlayerController playerController, string message, LogType? type = LogType.DEFAULT)
     {
         playerController.PrintToCenter(GetFormatedText(message, type, true));
+    }
+    public static void PrintCenterHtml(CCSPlayerController playerController, string message, LogType? type = LogType.DEFAULT)
+    {
+        playerController.PrintToCenterHtml(GetFormatedHtml(message, type));
     }
 
     public static void PrintChat(CCSPlayerController playerController, string message, LogType? type = LogType.DEFAULT)
@@ -110,7 +104,15 @@ public static class Log
                 break;
         }
 
-       Console.WriteLine(GetFormatedText(message, type, true));
-       Console.ResetColor();
+        Console.WriteLine(GetFormatedText(message, type, true));
+        Console.ResetColor();
+    }
+    public static string GetEffectLocale(string name, string type)
+    {
+        return $"effect_{type}_{name}";
+    }
+    public static string GetLocalizedText(string key, params object[] args)
+    {
+        return RollTheDice.Instance!.Localizer[key, args];
     }
 }

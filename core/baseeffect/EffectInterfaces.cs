@@ -21,11 +21,6 @@ public interface IEffectGameEvent<TEvent> where TEvent : GameEvent
     HookResult OnEvent(TEvent @event, GameEventInfo eventInfo);
 }
 
-public interface IEffectGameEventVerbose
-{
-    string MessageOnEvent { get; set; }
-}
-
 public interface IEffectParameter
 {
     Dictionary<string, string> RawParameters {get; set;}

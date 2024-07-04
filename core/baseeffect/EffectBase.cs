@@ -33,9 +33,9 @@ public abstract class EffectBase : IEffect
 
     // PrettyName is used to display the effect name to the player
     public abstract string PrettyName { get; set; }
-    
-    // Description is used to display the effect description to the player
-    public abstract string Description { get; set; }
+
+   // TranslationName is used display the effect translation.
+    public abstract string TranslationName { get; set; }
 
     // Probability is used to determine the chance of an effect being rolled
     public abstract double Probability { get; set; }
@@ -75,7 +75,7 @@ public abstract class EffectBase : IEffect
 
     public string GetEffectPrefix()
     {
-        return $"[{{mark2}}{PrettyName}{{default}}] ";
+        return Log.GetLocalizedText("prefix_effect", PrettyName);
     }
 
     public static void ResetEffects()

@@ -5,7 +5,6 @@ using Preach.CS2.Plugins.RollTheDiceV2.Core.BaseEffect;
 using Preach.CS2.Plugins.RollTheDiceV2.Utilities;
 using Preach.CS2.Plugins.RollTheDiceV2.Config;
 using CounterStrikeSharp.API.Modules.Config;
-using CounterStrikeSharp.API.Modules.Events;
 
 namespace Preach.CS2.Plugins.RollTheDiceV2;
 
@@ -20,7 +19,6 @@ public class RollTheDice : BasePlugin, IPluginConfig<GeneralConfig>
     required public GeneralConfig Config { get; set; }
     public static RollTheDice? Instance { get; private set; }
     public EffectConfig? EffectConfig { get; private set; }
-    public TranslationConfig? TranslationConfig { get; private set; }
     public EffectManager? EffectManager { get; private set; }
     public DiceSystem? DiceSystem { get; private set; }
     public Commands? Commands { get; private set; }
@@ -31,9 +29,6 @@ public class RollTheDice : BasePlugin, IPluginConfig<GeneralConfig>
         base.Load(hotReload);
         Instance = this;
 
-        TranslationConfig = new TranslationConfig(this);
-        int dataAmount = TranslationConfig.UpdateConfig();
-
         EffectManager = new EffectManager(this);
         DiceSystem = new DiceSystem(this);
         EventSystem = new EventSystem(this);
@@ -42,7 +37,6 @@ public class RollTheDice : BasePlugin, IPluginConfig<GeneralConfig>
 
         RegisterEffects();
 
-        TranslationConfig.GetOrGenerateTranslationForEffects(dataAmount);
         EffectConfig.GetOrGenerateEffectsConfig();
     }
 
@@ -55,7 +49,6 @@ public class RollTheDice : BasePlugin, IPluginConfig<GeneralConfig>
     {
         Config = ConfigManager.Load<GeneralConfig>("RollTheDice");
         EffectConfig!.LoadConfig();
-        TranslationConfig!.UpdateConfig();
         DiceSystem!.ResetState();
         EffectManager!.ResetState();
     }
@@ -85,12 +78,6 @@ public class RollTheDice : BasePlugin, IPluginConfig<GeneralConfig>
 
             // To invoke the translation function
             var name = effectInstance.PrettyName;
-            var description = effectInstance.Description;
-
-            if (effect is IEffectGameEventVerbose effectVerbose)
-            {
-                var verboseMessage = effectVerbose.MessageOnEvent;
-            }
 
             Log.PrintServerConsole($"Registering effect: {effectInstance.Name}", LogType.INFO);
         }

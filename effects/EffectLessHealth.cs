@@ -7,9 +7,9 @@ namespace Preach.CS2.Plugins.RollTheDiceV2.Effects;
 public class EffectLessHealth : EffectBaseRegular, IEffectParameter
 {
     public override bool Enabled { get; set; } = true;
-    public override string PrettyName { get; set; } = "Less Health".__("effect_name_less_health");
-    public override string Description { get; set; } = "Your health is decreased by {mark}{0}".__("effect_description_less_health");
-    public override double Probability { get; set; }  = 3;
+    public override string PrettyName { get; set; } = "Less Health";
+    public override string TranslationName { get; set; } = "less_health";
+    public override double Probability { get; set; } = 3;
     public override bool ShowDescriptionOnRoll { get; set; } = false;
     public Dictionary<string, string> RawParameters { get; set; } = new();
 
@@ -33,7 +33,7 @@ public class EffectLessHealth : EffectBaseRegular, IEffectParameter
         playerController!.PlayerPawn.Value.Health = Math.Max(plyHealth - healthInt, 1);
 
         playerController.RefreshUI();
-        PrintDescription(playerController, "effect_description_less_health", healthStr);
+        PrintDescription(playerController, TranslationName, healthStr);
     }
 
     public override void OnRemove(CCSPlayerController? playerController)

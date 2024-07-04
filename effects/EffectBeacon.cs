@@ -11,10 +11,10 @@ namespace Preach.CS2.Plugins.RollTheDiceV2.Effects;
 public class EffectBeacon : EffectBaseRegular
 {
     public override bool Enabled { get; set; } = true;
-    public override string PrettyName { get; set; } = "Beacon".__("effect_name_beacon");
-    public override string Description { get; set; } = "Beacon.".__("effect_description_beacon");
-    public override double Probability { get; set; }  = 1;
-    public override bool ShowDescriptionOnRoll { get; set; } = false;
+    public override string PrettyName { get; set; } = "Beacon";
+    public override string TranslationName { get; set; } = "beacon";
+    public override double Probability { get; set; } = 1;
+    public override bool ShowDescriptionOnRoll { get; set; } = true;
     public static Dictionary<CCSPlayerController, Timer> BeaconTimers { get; set; } = [];
 
     public override void Initialize()

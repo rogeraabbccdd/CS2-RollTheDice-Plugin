@@ -1,6 +1,5 @@
 using CounterStrikeSharp.API.Core;
 using Preach.CS2.Plugins.RollTheDiceV2.Core.BaseEffect;
-using Preach.CS2.Plugins.RollTheDiceV2.Utilities;
 using CounterStrikeSharp.API.Modules.Utils;
 using CounterStrikeSharp.API;
 
@@ -16,9 +15,9 @@ public class DoubleJumpUser
 public class EffectDoubleJump : EffectBaseRegular
 {
     public override bool Enabled { get; set; } = true;
-    public override string PrettyName { get; set; } = "Double Jump".__("effect_name_double_jump");
-    public override string Description { get; set; } = "Double Jump.".__("effect_description_double_jump");
-    public override double Probability { get; set; }  = 1;
+    public override string PrettyName { get; set; } = "Double Jump";
+    public override string TranslationName { get; set; } = "double_jump";
+    public override double Probability { get; set; } = 1;
     public override bool ShowDescriptionOnRoll { get; set; } = false;
     public static Dictionary<CCSPlayerController, DoubleJumpUser> DoubleJumpUsers = new Dictionary<CCSPlayerController, DoubleJumpUser>();
     

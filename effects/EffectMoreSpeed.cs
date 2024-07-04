@@ -8,9 +8,9 @@ namespace Preach.CS2.Plugins.RollTheDiceV2.Effects;
 public class EffectMoreSpeed : EffectBaseRegular, IEffectParameter
 {
     public override bool Enabled { get; set; } = true;
-    public override string PrettyName { get; set; } = "More Speed".__("effect_name_more_speed");
-    public override string Description { get; set; } = "Your speed is increased by {mark}{0}".__("effect_description_more_speed");
-    public override double Probability { get; set; }  = 2;
+    public override string PrettyName { get; set; } = "More Speed";
+    public override string TranslationName { get; set; } = "more_speed";
+    public override double Probability { get; set; } = 2;
     public Dictionary<string, string> RawParameters {get; set; } = new();
     public override bool ShowDescriptionOnRoll { get; set; } = false;
 
@@ -30,7 +30,7 @@ public class EffectMoreSpeed : EffectBaseRegular, IEffectParameter
             return;
 
         playerController!.PlayerPawn.Value.VelocityModifier *= speedF;
-        PrintDescription(playerController, "effect_description_more_speed", ((speedF-1) * 100)+"%");
+        PrintDescription(playerController, TranslationName, ((speedF-1) * 100)+"%");
     }
 
     public override void OnRemove(CCSPlayerController? playerController)

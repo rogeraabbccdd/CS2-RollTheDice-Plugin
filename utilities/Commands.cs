@@ -19,7 +19,7 @@ public class Commands
 
         if(args != info?.ArgCount)
         {
-            string errMsg = "Please provide a config name!";
+            string errMsg = Log.GetLocalizedText("effect_config_failed_name");
             if(isPlyValid)
                 plyController!.LogChat(errMsg, LogType.ERROR);
             else 
@@ -28,7 +28,7 @@ public class Commands
             return;
         }
 
-        var msg = $"Changing {configType} config...";
+        var msg = Log.GetLocalizedText("effect_config_changing");
         if(isPlyValid)
             plyController!.LogChat(msg, LogType.INFO);
         else 
@@ -42,12 +42,9 @@ public class Commands
             case "effect":
                 _plugin.EffectConfig!.UpdateConfig(info.ArgByIndex(1));
                 break;
-            case "translation":
-                _plugin.TranslationConfig!.UpdateConfig(info.ArgByIndex(1));
-                break;
         }
 
-        var successMessage = $"{configType} config changed!";
+        var successMessage = Log.GetLocalizedText("effect_config_changed");
         if(isPlyValid)
             plyController!.LogChat(successMessage, LogType.SUCCSS);
         else 
@@ -56,27 +53,22 @@ public class Commands
 
     private void CreateCommands()
     {
-        _plugin.AddCommand("dice", "Roll the dice!", 
+        _plugin.AddCommand("dice", Log.GetLocalizedText("cmd_description_dice"), 
             [CommandHelper(0, "Rolling the dice my guy", CommandUsage.CLIENT_ONLY)] (ply, info) => {
                 _plugin.DiceSystem!.CheckPlayerStatus(ply!);
             });
 
-        _plugin.AddCommand("rtd_config_all", "Reload the config file!".__("cmd_description_reload_config"), 
+        _plugin.AddCommand("rtd_config_reload", Log.GetLocalizedText("cmd_description_reload_config"), 
             [RequiresPermissions("@css/root")] (ply, info) => {
                 ConfigCallback(ply, "all", 1, info);
             });
 
-        _plugin.AddCommand("rtd_config_effect", "Change the effect config!".__("cmd_description_effect_config"), 
+        _plugin.AddCommand("rtd_config_set", Log.GetLocalizedText("cmd_description_effect_config"), 
             [RequiresPermissions("@css/root")] (ply, info) => {
                 ConfigCallback(ply, "effect", 2, info);
             });
 
-        _plugin.AddCommand("rtd_config_language", "Change the translation config!".__("cmd_description_translation_config"), 
-            [RequiresPermissions("@css/root")] (ply, info) => {
-                ConfigCallback(ply, "translation", 2, info);
-            });
-
-        _plugin.AddCommand("rtd_timer_effects_end", "A workround to kill all effect timers!".__("cmd_description_kill_effect_timers"), 
+        _plugin.AddCommand("rtd_timer_effects_end", Log.GetLocalizedText("cmd_description_kill_effect_timers"), 
             [RequiresPermissions("@css/root"), CommandHelper(0, "", CommandUsage.SERVER_ONLY)] (ply, info) => {
                 if(info.ArgCount != 3)
                     return;

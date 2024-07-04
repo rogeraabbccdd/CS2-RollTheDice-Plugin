@@ -8,11 +8,10 @@ namespace Preach.CS2.Plugins.RollTheDiceV2.Effects;
 public class EffectVampire : EffectBaseEvent<EventPlayerHurt>, IEffectParameter
 {
     public override bool Enabled { get; set; } = true;
-    public override string PrettyName { get; set; } = "Vampire".__("effect_name_vampire") ;
-    public override string Description { get; set; } = "You will drain health from the player you harm".__("effect_description_vampire") ;
-    public override double Probability { get; set; }  = 1;
+    public override string PrettyName { get; set; } = "Vampire";
+    public override string TranslationName { get; set; } = "vampire";
+    public override double Probability { get; set; } = 1;
     public override bool ShowDescriptionOnRoll { get; set; } = true;
-    public override string MessageOnEvent { get; set; } = "You drained {mark}{0}{default} health from {mark}{1}".__("effect_event_vampire");
     public Dictionary<string, string> RawParameters { get; set; } = new();
 
     private bool _allowTeamDamage = false;
@@ -52,7 +51,7 @@ public class EffectVampire : EffectBaseEvent<EventPlayerHurt>, IEffectParameter
         // Health less than 1 crashes the server
         attackerController.PlayerPawn.Value.Health += damageAmount;
         attackerController.RefreshUI(); 
-        PrintMessageOnEvent(attackerController, "effect_event_vampire", damageAmount+"", victimName);
+        PrintMessageOnEvent(attackerController, TranslationName, damageAmount);
 
         return HookResult.Continue;
     }

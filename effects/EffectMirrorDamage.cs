@@ -9,11 +9,10 @@ public class EffectMirrorDamage : EffectBaseEvent<EventPlayerHurt>, IEffectParam
 {
     private bool _allowTeamDamage = false;
     public override bool Enabled { get; set; } = true;
-    public override string PrettyName { get; set; } = "Mirror Damage".__("effect_name_mirror_damage");
-    public override string Description { get; set; } = "Applying damages to players will be refelected to you".__("effect_description_mirror_damage") ;
-    public override double Probability { get; set; }  = 1;
+    public override string PrettyName { get; set; } = "Mirror Damage";
+    public override string TranslationName { get; set; } = "mirror_damage";
+    public override double Probability { get; set; } = 1;
     public override bool ShowDescriptionOnRoll { get; set; } = true;
-    public override string MessageOnEvent { get; set; } = "{mark}{0}{default} damage has been reflected back to you".__("effect_event_mirror_damage");
     public Dictionary<string, string> RawParameters { get; set; } = new();
 
     public override void Initialize()
@@ -52,7 +51,7 @@ public class EffectMirrorDamage : EffectBaseEvent<EventPlayerHurt>, IEffectParam
         var attackerHealth = attackerController.PlayerPawn.Value.Health;
         attackerController.PlayerPawn.Value.Health = Math.Max(attackerHealth - damageAmount, 1);
         attackerController.RefreshUI();
-        PrintMessageOnEvent(attackerController, "effect_event_mirror_damage", damageAmount+"");
+        PrintMessageOnEvent(attackerController, TranslationName, damageAmount);
 
         return HookResult.Continue;
     }

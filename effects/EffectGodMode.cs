@@ -10,9 +10,9 @@ namespace Preach.CS2.Plugins.RollTheDiceV2.Effects;
 public class EffectGodMode : EffectBaseRegular, IEffectParameter, IEffectTimer
 {
     public override bool Enabled { get; set; } = true;
-    public override string PrettyName { get; set; } = "GodMode".__("effect_name_godmode");
-    public override string Description { get; set; } = "Godmode is enabled for {mark}{0}{default} seconds".__("effect_description_godmode");
-    public override double Probability { get; set; }  = 1;
+    public override string PrettyName { get; set; } = "GodMode";
+    public override string TranslationName { get; set; } = "godmode";
+    public override double Probability { get; set; } = 1;
     public override bool ShowDescriptionOnRoll { get; set; } = false;
     public Dictionary<string, string> RawParameters { get; set; } = new();
     public Dictionary<IntPtr, CounterStrikeSharp.API.Modules.Timers.Timer> Timers { get; set; } = new();
@@ -28,7 +28,7 @@ public class EffectGodMode : EffectBaseRegular, IEffectParameter, IEffectTimer
 
         if(Timers.ContainsKey(playerController!.Handle))
         {
-            playerController.LogChat(GetEffectPrefix() + "You already have this effect");
+            playerController.LogChat(GetEffectPrefix() + Log.GetLocalizedText("effect_already_applied"));
             return;
         }
 
@@ -40,7 +40,7 @@ public class EffectGodMode : EffectBaseRegular, IEffectParameter, IEffectTimer
 
         playerController!.PlayerPawn.Value.Health = (int)10e8;
         playerController.RefreshUI();
-        PrintDescription(playerController, "effect_description_godmode", durationStr);
+        PrintDescription(playerController, TranslationName, durationStr);
 
         var timerRef = Timers;
         StartTimer(ref timerRef, playerController, durationFl);
@@ -70,7 +70,7 @@ public class EffectGodMode : EffectBaseRegular, IEffectParameter, IEffectTimer
             playerController!.PlayerPawn.Value.Health = plyMaxHealth;
         }
 
-        playerController.LogChat(GetEffectPrefix() + "Godmode has ended");
+        playerController.LogChat(GetEffectPrefix() + Log.GetLocalizedText(Log.GetEffectLocale(TranslationName, "end")));
         playerController.RefreshUI();
     }
 

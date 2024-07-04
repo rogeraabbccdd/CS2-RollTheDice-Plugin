@@ -7,9 +7,9 @@ namespace Preach.CS2.Plugins.RollTheDiceV2.Effects;
 public class EffectImposter : EffectBaseRegular
 {
     public override bool Enabled { get; set; } = true;
-    public override string PrettyName { get; set; } = "Imposter".__("effect_name_imposter");
-    public override string Description { get; set; } = "Your player model has been changed to enemy team for {mark}{0}{default} seconds.".__("effect_description_imposter");
-    public override double Probability { get; set; }  = 1;
+    public override string PrettyName { get; set; } = "Imposter";
+    public override string TranslationName { get; set; } = "imposter";
+    public override double Probability { get; set; } = 1;
     public override bool ShowDescriptionOnRoll { get; set; } = false;
     public Dictionary<string, string> RawParameters {get; set;} = new();
     public Dictionary<nint, CounterStrikeSharp.API.Modules.Timers.Timer> Timers { get; set; } = new();
@@ -28,7 +28,7 @@ public class EffectImposter : EffectBaseRegular
 
         if(Timers.ContainsKey(playerController!.Handle))
         {
-            playerController.LogChat(GetEffectPrefix() + "You already have this effect");
+            playerController.LogChat(GetEffectPrefix() + Log.GetLocalizedText("effect_already_applied"));
             return;
         }
 
@@ -48,14 +48,13 @@ public class EffectImposter : EffectBaseRegular
         });
 
         var timerRef = Timers;
-        PrintDescription(playerController, "effect_description_noclip", durationStr);
 
         RollTheDice.Instance!.AddTimer(durationFl, () =>
         {
             OnTimerEnd(playerController);
         });
 
-        PrintDescription(playerController, "effect_description_imposter", durationStr);
+        PrintDescription(playerController, TranslationName, durationStr);
     }
 
     public override void OnRemove(CCSPlayerController? playerController)
@@ -71,7 +70,7 @@ public class EffectImposter : EffectBaseRegular
     {
         if(playerController == null || playerController.PlayerPawn.Value == null)   return;
 
-        playerController.LogChat(GetEffectPrefix() + "Imposter has ended");
+        playerController.LogChat(GetEffectPrefix() + Log.GetLocalizedText(Log.GetEffectLocale(TranslationName, "end")));
 
         CounterStrikeSharp.API.Server.NextFrame(() =>
         {

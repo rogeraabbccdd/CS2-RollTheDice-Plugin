@@ -7,10 +7,10 @@ namespace Preach.CS2.Plugins.RollTheDiceV2.Effects;
 public class EffectOneHealth : EffectBaseRegular, IEffectParameter
 {
     public override bool Enabled { get; set; } = true;
-    public override string PrettyName { get; set; } = "1 HP".__("effect_name_one_health");
-    public override string Description { get; set; } = "Your health is 1".__("effect_description_one_health");
-    public override double Probability { get; set; }  = 1;
-    public override bool ShowDescriptionOnRoll { get; set; } = false;
+    public override string PrettyName { get; set; } = "1 HP";
+    public override string TranslationName { get; set; } = "one_health";
+    public override double Probability { get; set; } = 1;
+    public override bool ShowDescriptionOnRoll { get; set; } = true;
     public Dictionary<string, string> RawParameters { get; set; } = new();
 
     public override void Initialize()
@@ -26,7 +26,6 @@ public class EffectOneHealth : EffectBaseRegular, IEffectParameter
         playerController!.PlayerPawn.Value.Health = 1;
 
         playerController.RefreshUI();
-        PrintDescription(playerController, "effect_description_one_health");
     }
 
     public override void OnRemove(CCSPlayerController? playerController)
