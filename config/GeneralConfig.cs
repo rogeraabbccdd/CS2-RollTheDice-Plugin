@@ -1,14 +1,5 @@
-using System.Collections;
-using System.Collections.Immutable;
-using System.Reflection;
-using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks.Dataflow;
 using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Modules.Config;
-using Preach.CS2.Plugins.RollTheDiceV2.Core;
-using Preach.CS2.Plugins.RollTheDiceV2.Core.BaseEffect;
-using Preach.CS2.Plugins.RollTheDiceV2.Utilities;
 
 namespace Preach.CS2.Plugins.RollTheDiceV2.Config;
 
