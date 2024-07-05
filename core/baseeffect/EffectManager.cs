@@ -112,6 +112,12 @@ public class EffectManager
         return HookResult.Continue;
     }
 
+    public HookResult HandleRoundFreezeEnd (EventRoundFreezeEnd @event, GameEventInfo eventInfo)
+    {
+        EffectSuicide.OnRoundFreezeEnd();
+        return HookResult.Continue;
+    }
+
     public void OnGameFrame ()
     {
         EffectThirdPerson.OnGameFrame();

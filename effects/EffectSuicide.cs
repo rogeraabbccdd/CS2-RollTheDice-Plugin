@@ -1,8 +1,7 @@
 
-using System.ComponentModel;
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using Preach.CS2.Plugins.RollTheDiceV2.Core.BaseEffect;
-using Preach.CS2.Plugins.RollTheDiceV2.Utilities;
 
 namespace Preach.CS2.Plugins.RollTheDiceV2.Effects;
 
@@ -13,6 +12,7 @@ public class EffectSuicide : EffectBaseRegular
     public override string TranslationName { get; set; } = "suicide";
     public override double Probability { get; set; } = 1;
     public override bool ShowDescriptionOnRoll { get; set; } = true;
+    public static List<CCSPlayerController> players = [];
 
     public override void Initialize()
     {
@@ -25,10 +25,23 @@ public class EffectSuicide : EffectBaseRegular
         if(playerController!.PlayerPawn.Value.LifeState != 0)
             return;
 
-        playerController.PlayerPawn.Value.CommitSuicide(true, false);
+        bool freezeTime = CounterStrikeSharp.API.Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").First().GameRules?.FreezePeriod ?? false;
+
+        if (freezeTime) players.Add(playerController);
+        else            playerController.PlayerPawn.Value.CommitSuicide(true, false);
     }
 
     public override void OnRemove(CCSPlayerController? playerController)
     {
+    }
+
+    public static void OnRoundFreezeEnd()
+    {
+        foreach (var player in players)
+        {
+            if (player.PlayerPawn.Value == null)  continue;
+            player.PlayerPawn.Value.CommitSuicide(true, false);
+        }
+        players.Clear();
     }
 }

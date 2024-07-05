@@ -19,6 +19,7 @@ public class EventSystem
         _plugin.RegisterEventHandler<EventPlayerDisconnect>(HandlePlayerDisconnect, HookMode.Pre);
         _plugin.RegisterEventHandler<EventPlayerDeath>(HandlePlayerDeath);
         _plugin.RegisterEventHandler<EventRoundStart>(HandleRoundStart);
+        _plugin.RegisterEventHandler<EventRoundFreezeEnd>(HandleRoundFreezeEnd);
         _plugin.RegisterEventHandler<EventPlayerHurt>(HandlePlayerHurt);
         _plugin.RegisterListener<Listeners.OnTick>(OnGameFrame);
     }
@@ -43,6 +44,13 @@ public class EventSystem
     {
         _plugin.EffectManager!.HandleRoundStart(@event, eventInfo);
         _plugin.DiceSystem!.HandleRoundStart(@event, eventInfo);
+
+        return HookResult.Continue;
+    }
+
+    public HookResult HandleRoundFreezeEnd(EventRoundFreezeEnd @event, GameEventInfo eventInfo)
+    {
+        _plugin.EffectManager!.HandleRoundFreezeEnd(@event, eventInfo);
 
         return HookResult.Continue;
     }
