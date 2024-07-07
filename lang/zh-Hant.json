@@ -14,7 +14,7 @@
   "dice_wrong_team_ct": "在 {blue}{0} 時不能抽獎",
   "dice_wrong_team_spec": "在 {lightpurple}{0} 時不能抽獎",
   "dice_wrong_team_unknown": "在 {lightpurple}{0} 時不能抽獎",
-  "dice_notify_round_start": "在聊天室輸入 {blue}!c8la{default} 抽獎!",
+  "dice_notify_round_start": "在聊天室輸入 {blue}!dice{default} 抽獎!",
   "cmd_description_dice": "抽獎!",
   "cmd_description_reload_config": "重新載入設定檔!",
   "cmd_description_kill_effect_timers": "停止所有效果計時器!",
