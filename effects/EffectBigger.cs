@@ -5,7 +5,7 @@ using Preach.CS2.Plugins.RollTheDiceV2.Utilities;
 
 namespace Preach.CS2.Plugins.RollTheDiceV2.Effects;
 
-public class EffectMoreScale : EffectBaseRegular, IEffectParameter
+public class EffectBigger : EffectBaseRegular, IEffectParameter
 {
     public override bool Enabled { get; set; } = true;
     public override string PrettyName { get; set; } = "Bigger";
