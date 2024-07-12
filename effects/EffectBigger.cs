@@ -10,7 +10,7 @@ public class EffectBigger : EffectBaseRegular, IEffectParameter
     public override bool Enabled { get; set; } = true;
     public override string PrettyName { get; set; } = "Bigger";
     public override string TranslationName { get; set; } = "bigger";
-    public override double Probability { get; set; } = 3;
+    public override double Probability { get; set; } = 1;
     public Dictionary<string, string> RawParameters {get; set; } = new();
     public override bool ShowDescriptionOnRoll { get; set; } = false;
 
