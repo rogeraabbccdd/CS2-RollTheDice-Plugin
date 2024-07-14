@@ -41,4 +41,8 @@ public class EffectLessFOV : EffectBaseRegular, IEffectParameter
         playerController.DesiredFOV = 90;
         playerController.RefreshUI();
     }
+
+    public override void OnRoundFreezeEnd(CCSPlayerController? playerController)
+    {
+    }
 }

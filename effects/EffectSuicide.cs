@@ -12,7 +12,7 @@ public class EffectSuicide : EffectBaseRegular
     public override string TranslationName { get; set; } = "suicide";
     public override double Probability { get; set; } = 1;
     public override bool ShowDescriptionOnRoll { get; set; } = true;
-    public static List<CCSPlayerController> players = [];
+    private bool SuicideOnFreezeEnd = false;
 
     public override void Initialize()
     {
@@ -25,9 +25,9 @@ public class EffectSuicide : EffectBaseRegular
         if(playerController!.PlayerPawn.Value.LifeState != 0)
             return;
 
-        bool freezeTime = CounterStrikeSharp.API.Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").First().GameRules?.FreezePeriod ?? false;
+        bool freezeTime = Utilities.Helpers.IsFreezeTime();
 
-        if (freezeTime) players.Add(playerController);
+        if (freezeTime) SuicideOnFreezeEnd = true;
         else            playerController.PlayerPawn.Value.CommitSuicide(true, false);
     }
 
@@ -35,13 +35,11 @@ public class EffectSuicide : EffectBaseRegular
     {
     }
 
-    public static void OnRoundFreezeEnd()
+    public override void OnRoundFreezeEnd(CCSPlayerController? playerController)
     {
-        foreach (var player in players)
+        if (SuicideOnFreezeEnd && playerController != null && playerController.PlayerPawn.Value != null)
         {
-            if (player.PlayerPawn.Value == null)  continue;
-            player.PlayerPawn.Value.CommitSuicide(true, false);
+            playerController.PlayerPawn.Value.CommitSuicide(true, false);
         }
-        players.Clear();
     }
 }

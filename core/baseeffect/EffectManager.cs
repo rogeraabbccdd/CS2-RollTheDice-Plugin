@@ -114,7 +114,10 @@ public class EffectManager
 
     public HookResult HandleRoundFreezeEnd (EventRoundFreezeEnd @event, GameEventInfo eventInfo)
     {
-        EffectSuicide.OnRoundFreezeEnd();
+        foreach (var player in CounterStrikeSharp.API.Utilities.GetPlayers())
+        {
+            player?.GetEffect()?.OnRoundFreezeEnd(player);
+        }
         return HookResult.Continue;
     }
 

@@ -47,6 +47,11 @@ public class EffectBeacon : EffectBaseRegular
             BeaconTimers.Remove(playerController);
         }
     }
+
+    public override void OnRoundFreezeEnd(CCSPlayerController? playerController)
+    {
+    }
+
     // https://github.com/schwarper/cs2-admin/blob/main/src/playerutils/playerutils.cs#L194
     public static void Beacon (CCSPlayerController playerController)
     {

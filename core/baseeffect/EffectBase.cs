@@ -46,6 +46,9 @@ public abstract class EffectBase : IEffect
     // Initialize is used to initialize the effect
     public abstract void Initialize();
 
+    // OnRoundFreezeEnd is used to apply event on round freeze end
+    public abstract void OnRoundFreezeEnd(CCSPlayerController? playerController);
+
     public EffectBase()
     {
         Effects.Add(this);

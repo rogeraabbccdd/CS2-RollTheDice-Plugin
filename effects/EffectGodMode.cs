@@ -16,7 +16,8 @@ public class EffectGodMode : EffectBaseRegular, IEffectParameter, IEffectTimer
     public override bool ShowDescriptionOnRoll { get; set; } = false;
     public Dictionary<string, string> RawParameters { get; set; } = new();
     public Dictionary<IntPtr, CounterStrikeSharp.API.Modules.Timers.Timer> Timers { get; set; } = new();
-
+    private bool StartTimerOnFreezeEnd = false;
+    private float TimerDuration = 0.0f;
     public override void Initialize()
     {
         RawParameters.Add("durationSeconds", "10");
@@ -40,10 +41,19 @@ public class EffectGodMode : EffectBaseRegular, IEffectParameter, IEffectTimer
 
         playerController!.PlayerPawn.Value.Health = (int)10e8;
         playerController.RefreshUI();
-        PrintDescription(playerController, TranslationName, durationStr);
 
-        var timerRef = Timers;
-        StartTimer(ref timerRef, playerController, durationFl);
+        bool freezeTime = Utilities.Helpers.IsFreezeTime();
+        if (freezeTime)
+        {
+            StartTimerOnFreezeEnd = true;
+            TimerDuration = durationFl;
+        }
+        else
+        {
+            StartEffectTimer(playerController, durationFl);
+        }
+
+        PrintDescription(playerController, TranslationName, durationStr);
     }
 
     public override void OnRemove(CCSPlayerController? playerController)
@@ -55,6 +65,19 @@ public class EffectGodMode : EffectBaseRegular, IEffectParameter, IEffectTimer
         }
     }
 
+    public override void OnRoundFreezeEnd(CCSPlayerController? playerController)
+    {
+        if (StartTimerOnFreezeEnd)
+        {
+            StartEffectTimer(playerController, TimerDuration);
+            StartTimerOnFreezeEnd = false;
+        }
+    }
+    public void StartEffectTimer (CCSPlayerController? playerController, float duration)
+    {
+        var timerRef = Timers;
+        StartTimer(ref timerRef, playerController, duration);
+    }
     public void OnTimerEnd(CCSPlayerController playerController)
     {
         if (playerController == null || playerController.PlayerPawn.Value is null)  return;

@@ -59,4 +59,8 @@ public class EffectVampire : EffectBaseEvent<EventPlayerHurt>, IEffectParameter
     public override void OnRemove(CCSPlayerController? playerController)
     {
     }
+
+    public override void OnRoundFreezeEnd(CCSPlayerController? playerController)
+    {
+    }
 }

@@ -4,7 +4,7 @@ using Preach.CS2.Plugins.RollTheDiceV2.Utilities;
 
 namespace Preach.CS2.Plugins.RollTheDiceV2.Effects;
 
-public class EffectImposter : EffectBaseRegular
+public class EffectImposter : EffectBaseRegular, IEffectParameter, IEffectTimer
 {
     public override bool Enabled { get; set; } = true;
     public override string PrettyName { get; set; } = "Imposter";
@@ -15,7 +15,8 @@ public class EffectImposter : EffectBaseRegular
     public Dictionary<nint, CounterStrikeSharp.API.Modules.Timers.Timer> Timers { get; set; } = new();
     private const string DEFAULT_T_MODEL = "characters/models/tm_phoenix/tm_phoenix.vmdl";
     private const string DEFAULT_CT_MODEL = "characters/models/ctm_sas/ctm_sas.vmdl";
-
+    private bool StartTimerOnFreezeEnd = false;
+    private float TimerDuration = 0.0f;
     public static Dictionary<CCSPlayerController, string> PlayerModel = new Dictionary<CCSPlayerController, string>();
     public override void Initialize()
     {
@@ -47,13 +48,16 @@ public class EffectImposter : EffectBaseRegular
             playerController.PlayerPawn.Value.SetModel(modelToSet);
         });
 
-        var timerRef = Timers;
-
-        RollTheDice.Instance!.AddTimer(durationFl, () =>
+        bool freezeTime = Utilities.Helpers.IsFreezeTime();
+        if (freezeTime)
         {
-            OnTimerEnd(playerController);
-        });
-
+            StartTimerOnFreezeEnd = true;
+            TimerDuration = durationFl;
+        }
+        else
+        {
+            StartEffectTimer(playerController, durationFl);
+        }
         PrintDescription(playerController, TranslationName, durationStr);
     }
 
@@ -64,6 +68,21 @@ public class EffectImposter : EffectBaseRegular
             timer.Kill();
             Timers.Remove(playerController!.Handle);
         }
+    }
+
+    public override void OnRoundFreezeEnd(CCSPlayerController? playerController)
+    {
+        if (StartTimerOnFreezeEnd)
+        {
+            StartEffectTimer(playerController, TimerDuration);
+            StartTimerOnFreezeEnd = false;
+        }
+    }
+
+    public void StartEffectTimer (CCSPlayerController? playerController, float duration)
+    {
+        var timerRef = Timers;
+        StartTimer(ref timerRef, playerController, duration);
     }
 
     public void OnTimerEnd(CCSPlayerController playerController)

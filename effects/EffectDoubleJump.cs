@@ -40,6 +40,10 @@ public class EffectDoubleJump : EffectBaseRegular
         DoubleJumpUsers.Remove(playerController);
     }
 
+    public override void OnRoundFreezeEnd(CCSPlayerController? playerController)
+    {
+    }
+
     public static void OnGameFrame ()
     {
         foreach (var player in CounterStrikeSharp.API.Utilities.GetPlayers().Where(player => player.IsValid))

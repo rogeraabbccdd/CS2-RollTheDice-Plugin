@@ -3,14 +3,13 @@ using Preach.CS2.Plugins.RollTheDiceV2.Core.BaseEffect;
 
 namespace Preach.CS2.Plugins.RollTheDiceV2.Effects;
 
-public class EffectGetHealthShot : EffectBaseRegular, IEffectParameter
+public class EffectGetHealthShot : EffectBaseRegular
 {
     public override bool Enabled { get; set; } = true;
     public override string PrettyName { get; set; } = "Healthshot";
     public override string TranslationName { get; set; } = "healthshot";
     public override double Probability { get; set; } = 2;
     public override bool ShowDescriptionOnRoll { get; set; } = true;
-    public Dictionary<string, string> RawParameters { get; set; } = new();
 
     public override void Initialize()
     {
@@ -27,6 +26,10 @@ public class EffectGetHealthShot : EffectBaseRegular, IEffectParameter
     }
 
     public override void OnRemove(CCSPlayerController? playerController)
+    {
+    }
+
+    public override void OnRoundFreezeEnd(CCSPlayerController? playerController)
     {
     }
 }

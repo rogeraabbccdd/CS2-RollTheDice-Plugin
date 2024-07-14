@@ -14,6 +14,8 @@ public class EffectNoclip : EffectBaseRegular, IEffectParameter, IEffectTimer
     public override bool ShowDescriptionOnRoll { get; set; } = false;
     public Dictionary<string, string> RawParameters {get; set;} = new();
     public Dictionary<nint, CounterStrikeSharp.API.Modules.Timers.Timer> Timers { get; set; } = new();
+    private bool StartTimerOnFreezeEnd = false;
+    private float TimerDuration = 0.0f;
 
     public override void Initialize()
     {
@@ -40,8 +42,16 @@ public class EffectNoclip : EffectBaseRegular, IEffectParameter, IEffectTimer
         Schema.SetSchemaValue(playerController!.PlayerPawn.Value.Handle, "CBaseEntity", "m_nActualMoveType", 8);
         playerController.RefreshUI();
 
-        var timerRef = Timers;
-        StartTimer(ref timerRef, playerController, durationFl);
+        bool freezeTime = Utilities.Helpers.IsFreezeTime();
+        if (freezeTime)
+        {
+            StartTimerOnFreezeEnd = true;
+            TimerDuration = durationFl;
+        }
+        else
+        {
+            StartEffectTimer(playerController, durationFl);
+        }
         PrintDescription(playerController, TranslationName, durationStr);
     }
 
@@ -52,6 +62,21 @@ public class EffectNoclip : EffectBaseRegular, IEffectParameter, IEffectTimer
             timer.Kill();
             Timers.Remove(playerController!.Handle);
         }
+    }
+
+    public override void OnRoundFreezeEnd(CCSPlayerController? playerController)
+    {
+        if (StartTimerOnFreezeEnd)
+        {
+            StartEffectTimer(playerController, TimerDuration);
+            StartTimerOnFreezeEnd = false;
+        }
+    }
+
+    public void StartEffectTimer (CCSPlayerController? playerController, float duration)
+    {
+        var timerRef = Timers;
+        StartTimer(ref timerRef, playerController, duration);
     }
 
     public void OnTimerEnd(CCSPlayerController playerController)

@@ -117,6 +117,10 @@ public class EffectThirdPerson : EffectBaseRegular, IEffectParameter
     }
 
     #region Game Events
+    public override void OnRoundFreezeEnd(CCSPlayerController? playerController)
+    {
+    }
+    
     public static void OnGameFrame ()
     {
         foreach (var player in ThirdPersonPool.Keys)

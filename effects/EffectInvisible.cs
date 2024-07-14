@@ -14,7 +14,8 @@ public class EffectInvisible : EffectBaseRegular, IEffectParameter, IEffectTimer
     public override bool ShowDescriptionOnRoll { get; set; } = false;
     public Dictionary<string, string> RawParameters { get; set; } = new();
     public Dictionary<nint, CounterStrikeSharp.API.Modules.Timers.Timer> Timers {get; set; } = new();
-
+    private bool StartTimerOnFreezeEnd = false;
+    private float TimerDuration = 0.0f;
     public override void Initialize()
     {
         RawParameters.Add("durationSeconds", "10");
@@ -39,8 +40,16 @@ public class EffectInvisible : EffectBaseRegular, IEffectParameter, IEffectTimer
         playerController!.PlayerPawn.Value.Render = Color.FromArgb(0, 0, 0, 0);
         playerController.RefreshUI();
 
-        var timerRef = Timers;
-        StartTimer(ref timerRef, playerController, durationFloat);
+        bool freezeTime = Utilities.Helpers.IsFreezeTime();
+        if (freezeTime)
+        {
+            StartTimerOnFreezeEnd = true;
+            TimerDuration = durationFloat;
+        }
+        else
+        {
+            StartEffectTimer(playerController, durationFloat);
+        }
         PrintDescription(playerController, TranslationName, durationStr);
     }
 
@@ -53,6 +62,21 @@ public class EffectInvisible : EffectBaseRegular, IEffectParameter, IEffectTimer
             timer.Kill();
             Timers.Remove(playerController!.Handle);
         }
+    }
+
+    public override void OnRoundFreezeEnd(CCSPlayerController? playerController)
+    {
+        if (StartTimerOnFreezeEnd)
+        {
+            StartEffectTimer(playerController, TimerDuration);
+            StartTimerOnFreezeEnd = false;
+        }
+    }
+
+    public void StartEffectTimer (CCSPlayerController? playerController, float duration)
+    {
+        var timerRef = Timers;
+        StartTimer(ref timerRef, playerController, duration);
     }
 
     public void OnTimerEnd(CCSPlayerController playerController)

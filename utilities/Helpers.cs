@@ -47,4 +47,9 @@ internal static class Helpers
         var getModel = new VirtualFunctionWithReturn<IntPtr, string>(GameData.GetSignature("CBaseModelEntity_GetModel"));
         return getModel.Invoke(entity);
     }
+
+    public static bool IsFreezeTime ()
+    {
+        return CounterStrikeSharp.API.Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").First().GameRules?.FreezePeriod ?? false;
+    }
 }
