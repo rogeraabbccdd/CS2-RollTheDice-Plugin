@@ -51,8 +51,8 @@ public class EffectLooseRandomWeapon : EffectBaseRegular
             return;
         }
 
-        playerController.RemoveItemByDesignerName(weaponToRemove.Value.DesignerName, false);
         playerController.ExecuteClientCommand("slot3");
+        CounterStrikeSharp.API.Utilities.RemoveItemByDesignerName(playerController, weaponToRemove.Value.DesignerName);
 
         var weaponName = weaponToRemove.Value.DesignerName;
         PrintDescription(playerController, TranslationName, weaponName);
