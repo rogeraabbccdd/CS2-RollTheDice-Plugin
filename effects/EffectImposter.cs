@@ -41,7 +41,7 @@ public class EffectImposter : EffectBaseRegular, IEffectParameter, IEffectTimer
 
         string modelToSet = playerController.Team == CounterStrikeSharp.API.Modules.Utils.CsTeam.CounterTerrorist ? DEFAULT_T_MODEL : DEFAULT_CT_MODEL;
 
-        PlayerModel.Add(playerController, Utilities.Helpers.GetModel(playerController.PlayerPawn.Value.Handle));
+        PlayerModel.Add(playerController, Utilities.Helpers.GetModel(playerController));
 
         CounterStrikeSharp.API.Server.NextFrame(() =>
         {

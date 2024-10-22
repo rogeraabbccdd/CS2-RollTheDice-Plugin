@@ -42,10 +42,9 @@ internal static class Helpers
         return (int)(damageAmount*scale);
     }
 
-    public static string GetModel (nint entity)
+    public static string GetModel (CCSPlayerController player)
     {
-        var getModel = new VirtualFunctionWithReturn<IntPtr, string>(GameData.GetSignature("CBaseModelEntity_GetModel"));
-        return getModel.Invoke(entity);
+        return player.PlayerPawn.Value?.CBodyComponent?.SceneNode?.GetSkeletonInstance().ModelState.ModelName ?? string.Empty;
     }
 
     public static bool IsFreezeTime ()
