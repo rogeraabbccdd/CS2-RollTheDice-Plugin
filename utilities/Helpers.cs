@@ -8,6 +8,7 @@ using Preach.CS2.Plugins.RollTheDiceV2.Core;
 using Preach.CS2.Plugins.RollTheDiceV2.Core.BaseEffect;
 using System.Runtime.InteropServices;
 using CounterStrikeSharp.API.Modules.Memory;
+using CounterStrikeSharp.API.Modules.Utils;
 
 namespace Preach.CS2.Plugins.RollTheDiceV2.Utilities;
 
@@ -50,5 +51,14 @@ internal static class Helpers
     public static bool IsFreezeTime ()
     {
         return CounterStrikeSharp.API.Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").First().GameRules?.FreezePeriod ?? false;
+    }
+
+    public static float CalculateDistance (Vector point1, Vector point2)
+    {
+        float dx = point2.X - point1.X;
+        float dy = point2.Y - point1.Y;
+        float dz = point2.Z - point1.Z;
+
+        return (float)Math.Sqrt(dx * dx + dy * dy + dz * dz);
     }
 }

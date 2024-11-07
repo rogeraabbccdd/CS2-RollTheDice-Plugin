@@ -1,4 +1,6 @@
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Utils;
 using Preach.CS2.Plugins.RollTheDiceV2.Core.BaseEffect;
 using Preach.CS2.Plugins.RollTheDiceV2.Utilities;
 
@@ -17,10 +19,12 @@ public class EffectImposter : EffectBaseRegular, IEffectParameter, IEffectTimer
     private const string DEFAULT_CT_MODEL = "characters/models/ctm_sas/ctm_sas.vmdl";
     private bool StartTimerOnFreezeEnd = false;
     private float TimerDuration = 0.0f;
+    private bool ShouldTeleport = true;
     public static Dictionary<CCSPlayerController, string> PlayerModel = new Dictionary<CCSPlayerController, string>();
     public override void Initialize()
     {
-        RawParameters.Add("durationSeconds", "30");
+        RawParameters.Add("durationSeconds", "5");
+        RawParameters.Add("teleport", "true");
     }
 
     public override void OnApply(CCSPlayerController? playerController)
@@ -39,11 +43,20 @@ public class EffectImposter : EffectBaseRegular, IEffectParameter, IEffectTimer
         if(!float.TryParse(durationStr, out var durationFl))
             return;
 
-        string modelToSet = playerController.Team == CounterStrikeSharp.API.Modules.Utils.CsTeam.CounterTerrorist ? DEFAULT_T_MODEL : DEFAULT_CT_MODEL;
+        if(!RawParameters.TryGetValue("teleport", out var teleportStr))
+            return;
+
+        if(!bool.TryParse(teleportStr, out var teleportBool))
+            return;
+        
+        TimerDuration = durationFl;
+        ShouldTeleport = teleportBool;
+
+        string modelToSet = playerController.Team == CsTeam.CounterTerrorist ? DEFAULT_T_MODEL : DEFAULT_CT_MODEL;
 
         PlayerModel.Add(playerController, Utilities.Helpers.GetModel(playerController));
 
-        CounterStrikeSharp.API.Server.NextFrame(() =>
+        Server.NextFrame(() =>
         {
             playerController.PlayerPawn.Value.SetModel(modelToSet);
         });
@@ -52,10 +65,10 @@ public class EffectImposter : EffectBaseRegular, IEffectParameter, IEffectTimer
         if (freezeTime)
         {
             StartTimerOnFreezeEnd = true;
-            TimerDuration = durationFl;
         }
         else
         {
+            if(ShouldTeleport)    Teleport(playerController);
             StartEffectTimer(playerController, durationFl);
         }
         PrintDescription(playerController, TranslationName, durationStr);
@@ -72,8 +85,9 @@ public class EffectImposter : EffectBaseRegular, IEffectParameter, IEffectTimer
 
     public override void OnRoundFreezeEnd(CCSPlayerController? playerController)
     {
-        if (StartTimerOnFreezeEnd)
+        if (StartTimerOnFreezeEnd && playerController != null)
         {
+            if(ShouldTeleport)    Teleport(playerController);
             StartEffectTimer(playerController, TimerDuration);
             StartTimerOnFreezeEnd = false;
         }
@@ -91,7 +105,7 @@ public class EffectImposter : EffectBaseRegular, IEffectParameter, IEffectTimer
 
         playerController.LogChat(GetEffectPrefix() + Log.GetLocalizedText(Log.GetEffectLocale(TranslationName, "end")));
 
-        CounterStrikeSharp.API.Server.NextFrame(() =>
+        Server.NextFrame(() =>
         {
             if (PlayerModel[playerController] != null)
             {
@@ -99,5 +113,60 @@ public class EffectImposter : EffectBaseRegular, IEffectParameter, IEffectTimer
                 PlayerModel.Remove(playerController);
             }
         });
+    }
+
+    public void Teleport (CCSPlayerController playerController)
+    {
+        var team = playerController.Team;
+        if (team != CsTeam.Terrorist && team != CsTeam.CounterTerrorist)
+            return;
+
+        var spawns = CounterStrikeSharp.API.Utilities.FindAllEntitiesByDesignerName<SpawnPoint>(
+            team == CsTeam.Terrorist ? "info_player_counterterrorist" : "info_player_terrorist"
+        );
+
+        List<Vector> emptySpawn = new();
+
+        foreach (var spawn in spawns)
+        {
+            if (spawn == null || spawn.AbsOrigin == null || spawn.AbsRotation == null)
+                continue;
+
+            bool conflit = false;
+            foreach (CCSPlayerController player in CounterStrikeSharp.API.Utilities.GetPlayers())
+            {
+                if (
+                    player.IsAlive() && 
+                    player.Pawn.Value != null &&
+                    player.Pawn.Value.AbsOrigin != null &&
+                    Utilities.Helpers.CalculateDistance(player.Pawn.Value.AbsOrigin, spawn.AbsOrigin) < 60.0
+                )
+                {
+                    conflit = true;
+                    break;
+                }
+            }
+
+            if (!conflit)
+            {
+                Vector vector = new ();
+                vector[0] = spawn.AbsOrigin[0];
+                vector[1] = spawn.AbsOrigin[1];
+                vector[2] = spawn.AbsOrigin[2];
+                emptySpawn.Add(vector);
+            }
+        }
+
+        if (emptySpawn.Count == 0)
+        {
+            playerController.LogChat(GetEffectPrefix() + Log.GetLocalizedText("effect_imposter_no_spawn"));
+        }
+        else
+        {
+            Random random = new Random();
+            int randomInt = random.Next(0, emptySpawn.Count);
+            playerController.PlayerPawn.Value?.Teleport(emptySpawn[randomInt], null, null);
+            playerController.LogChat(GetEffectPrefix() + Log.GetLocalizedText("effect_imposter_teleported"));
+        }
     }
 }
