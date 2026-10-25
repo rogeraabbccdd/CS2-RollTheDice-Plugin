@@ -104,8 +104,12 @@ public class DiceSystem
 
     public void CheckPlayerStatus(CCSPlayerController plyController)
     {
-        if(!plyController.IsValidPly() || !CheckTeamAndLifeState(plyController) || !CanRoll(plyController) || !HasEnoughMoney(plyController))
+        // Check money before CanRoll, otherwise a roll is used up even if the player can't pay for it
+        if(!plyController.IsValidPly() || !CheckTeamAndLifeState(plyController) || !HasEnoughMoney(plyController) || !CanRoll(plyController))
             return;
+
+        plyController.InGameMoneyServices!.Account -= _plugin.Config!.MoneyToRoll;
+        plyController.RefreshUI();
 
         RollAndApplyEffect(plyController, -1);
     }
@@ -115,8 +119,15 @@ public class DiceSystem
         if (plyController.InGameMoneyServices is null)  return false;
 
         int money = plyController.InGameMoneyServices.Account;
-        
-        return money >= _plugin.Config!.MoneyToRoll;
+
+        if(money < _plugin.Config!.MoneyToRoll)
+        {
+            plyController.LogChat(Log.GetLocalizedText("dice_not_enough_money", _plugin.Config.MoneyToRoll), LogType.INFO);
+
+            return false;
+        }
+
+        return true;
     }
 
     private EffectBase? GetEffectByRoll()
@@ -196,11 +207,6 @@ public class DiceSystem
             return;
 
         var plyID = plyController.SteamID;
-
-        if (plyController.InGameMoneyServices is null)  return;
-
-        plyController.InGameMoneyServices.Account -= _plugin.Config!.MoneyToRoll;
-        plyController.RefreshUI();
 
         var plyActiveEffect = RollTheDice.Instance!.EffectManager!.PlyActiveEffect;
         if(plyActiveEffect!.ContainsKey(plyID))

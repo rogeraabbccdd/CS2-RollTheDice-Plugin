@@ -10,6 +10,7 @@
   "dice_rolled_broadcast": "{blue}{0}{default} 抽到 {blue}{2}{default}!",
   "dice_rolls_left": "你這回合還剩 {blue}{0}{default} 次抽獎機會!",
   "dice_cant_roll_dead": "無法在死亡時抽獎!",
+  "dice_not_enough_money": "抽獎需要 {blue}${0}{default}!",
   "dice_wrong_team_t": "在 {orange}{0} 時不能抽獎",
   "dice_wrong_team_ct": "在 {blue}{0} 時不能抽獎",
   "dice_wrong_team_spec": "在 {lightpurple}{0} 時不能抽獎",
