@@ -47,7 +47,7 @@ public class EffectThirdPerson : EffectBaseRegular, IEffectParameter
             _cameraProp.Collision.SolidType = SolidType_t.SOLID_VPHYSICS;
 
             _cameraProp.DispatchSpawn();
-            _cameraProp.Render = Color.FromArgb(0, 255, 255, 255);
+            _cameraProp.Render = Color.FromArgb(0, 0, 0, 0);
 
             playerController.PlayerPawn.Value!.CameraServices!.ViewEntity.Raw = _cameraProp.EntityHandle.Raw;
             CounterStrikeSharp.API.Utilities.SetStateChanged(playerController.PlayerPawn.Value, "CBasePlayerPawn", "m_pCameraServices");
@@ -63,7 +63,7 @@ public class EffectThirdPerson : EffectBaseRegular, IEffectParameter
             if (_cameraProp == null) return;
 
             _cameraProp.DispatchSpawn();
-            _cameraProp.Render = Color.FromArgb(0, 255, 255, 255);
+            _cameraProp.Render = Color.FromArgb(0, 0, 0, 0);
 
             CounterStrikeSharp.API.Utilities.SetStateChanged(_cameraProp, "CBaseModelEntity", "m_clrRender");
     
