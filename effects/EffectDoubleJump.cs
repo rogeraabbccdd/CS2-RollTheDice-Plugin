@@ -30,8 +30,8 @@ public class EffectDoubleJump : EffectBaseRegular
     {
         if (playerController == null)  return;
 
-        var doubleJumpUser = new DoubleJumpUser();
-        DoubleJumpUsers.Add(playerController, doubleJumpUser);
+        // Add throws when the player rolls Double Jump again while still having it
+        DoubleJumpUsers.TryAdd(playerController, new DoubleJumpUser());
     }
 
     public override void OnRemove(CCSPlayerController? playerController)
@@ -46,9 +46,11 @@ public class EffectDoubleJump : EffectBaseRegular
 
     public static void OnGameFrame ()
     {
-        foreach (var player in CounterStrikeSharp.API.Utilities.GetPlayers().Where(player => player.IsValid))
+        // Only check players who have the effect instead of every player on every tick
+        foreach (var player in DoubleJumpUsers.Keys)
         {
-            OnDoubleJump(player);
+            if (player.IsValid)
+                OnDoubleJump(player);
         }
     }
     // https://github.com/fidarit/cs2-DoubleJump
