@@ -63,6 +63,15 @@ public class Commands
                 ConfigCallback(ply, "all", 1, info);
             });
 
+        _plugin.AddCommand("rtd_test", Log.GetLocalizedText("cmd_description_set"), 
+            [RequiresPermissions("@css/root")] (ply, info) => {
+                var effectNumber = info.ArgByIndex(1);
+                if(!int.TryParse(effectNumber, out var effectNumberInt))
+                    return;
+                _plugin.EffectManager!.RemoveOrResetPlyActiveEffects(ply!);
+                _plugin.DiceSystem!.RollAndApplyEffect(ply!, effectNumberInt);
+            });
+
         _plugin.AddCommand("rtd_config_set", Log.GetLocalizedText("cmd_description_effect_config"), 
             [RequiresPermissions("@css/root")] (ply, info) => {
                 ConfigCallback(ply, "effect", 2, info);

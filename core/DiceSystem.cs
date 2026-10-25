@@ -107,7 +107,7 @@ public class DiceSystem
         if(!plyController.IsValidPly() || !CheckTeamAndLifeState(plyController) || !CanRoll(plyController) || !HasEnoughMoney(plyController))
             return;
 
-        RollAndApplyEffect(plyController);
+        RollAndApplyEffect(plyController, -1);
     }
 
     private bool HasEnoughMoney (CCSPlayerController plyController)
@@ -135,6 +135,21 @@ public class DiceSystem
                 .Where(e => e.Enabled)
                 .OrderBy(e => e.CumulativeProbability)
                 .FirstOrDefault(e => roll <= e.CumulativeProbability);
+    }
+
+    private EffectBase? GetEffectByNumber(int number)
+    {
+        var effectsList = EffectBase.Effects;
+
+        if(effectsList == null)
+        {
+            Log.PrintServerConsole("No effects found", LogType.ERROR);
+            return null;
+        }
+
+        return effectsList
+                .Where(e => e.RollNumber == number)
+                .First();
     }
 
     private void BroadOrUnicastRollMessages(CCSPlayerController target, EffectBase effect)
@@ -170,12 +185,12 @@ public class DiceSystem
         }
     }
 
-    public void RollAndApplyEffect(CCSPlayerController plyController)
+    public void RollAndApplyEffect(CCSPlayerController plyController, int number)
     {
         if(!plyController.IsValidPly())
             return;
-
-        EffectBase? effect = GetEffectByRoll()!;
+        
+        EffectBase? effect = number == -1 ? GetEffectByRoll() : GetEffectByNumber(number);
 
         if(effect == null)
             return;
