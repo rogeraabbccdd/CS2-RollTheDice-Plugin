@@ -2,8 +2,7 @@ using CounterStrikeSharp.API.Core;
 using Preach.CS2.Plugins.RollTheDiceV2.Core.BaseEffect;
 using Preach.CS2.Plugins.RollTheDiceV2.Utilities;
 using CounterStrikeSharp.API.Modules.Utils;
-using CounterStrikeSharp.API.Modules.Entities.Constants;
-using System.Drawing;
+using CounterStrikeSharp.API;
 
 namespace Preach.CS2.Plugins.RollTheDiceV2.Effects;
 
@@ -21,99 +20,63 @@ public class EffectThirdPerson : EffectBaseRegular, IEffectParameter
         RawParameters.Add("smoothCamera", "false");
     }
 
-    public static Dictionary<CCSPlayerController, CDynamicProp> ThirdPersonPool = new Dictionary<CCSPlayerController, CDynamicProp>();
-    public static Dictionary<CCSPlayerController, CPhysicsPropMultiplayer> ThirdPersonPoolSmooth = new Dictionary<CCSPlayerController, CPhysicsPropMultiplayer>();
+    // point_camera has no model, so it won't render as an ERROR model behind the player
+    // https://github.com/KKNecmi/ThirdPerson-Revamped/blob/master/ThirdPerson/ThirdPersonRevamped.cs
+    public static Dictionary<CCSPlayerController, CPointCamera> ThirdPersonPool = new Dictionary<CCSPlayerController, CPointCamera>();
+    public static Dictionary<CCSPlayerController, bool> SmoothCameraPool = new Dictionary<CCSPlayerController, bool>();
 
     public override void OnApply(CCSPlayerController? playerController)
     {
-        if (playerController == null)  return;
+        if (playerController == null || playerController.PlayerPawn.Value == null)  return;
+
+        if (ThirdPersonPool.ContainsKey(playerController)) return;
 
         if(!RawParameters.TryGetValue("smoothCamera", out var smoothCameraStr))
             return;
 
         if(!bool.TryParse(smoothCameraStr, out var smoothCamera))
             return;
-        
-        if (smoothCamera)
+
+        var _camera = CounterStrikeSharp.API.Utilities.CreateEntityByName<CPointCamera>("point_camera");
+
+        if (_camera == null || !_camera.IsValid) return;
+
+        _camera.DispatchSpawn();
+        _camera.Teleport(CalculatePositionInFront(playerController, -110, 90), playerController.PlayerPawn.Value.V_angle, new Vector());
+
+        ThirdPersonPool.Add(playerController, _camera);
+        SmoothCameraPool[playerController] = smoothCamera;
+
+        Server.NextFrame(() =>
         {
-            var _cameraProp = CounterStrikeSharp.API.Utilities.CreateEntityByName<CPhysicsPropMultiplayer>("prop_physics_multiplayer");
+            if (!_camera.IsValid || !playerController.IsValid || playerController.PlayerPawn.Value == null) return;
 
-            if (_cameraProp == null || !_cameraProp.IsValid) return;
-
-            _cameraProp.DispatchSpawn();
-
-            _cameraProp.Collision.CollisionGroup = (byte)CollisionGroup.COLLISION_GROUP_NEVER;
-            _cameraProp.Collision.SolidFlags = 12;
-            _cameraProp.Collision.SolidType = SolidType_t.SOLID_VPHYSICS;
-
-            _cameraProp.DispatchSpawn();
-            _cameraProp.Render = Color.FromArgb(0, 0, 0, 0);
-
-            playerController.PlayerPawn.Value!.CameraServices!.ViewEntity.Raw = _cameraProp.EntityHandle.Raw;
+            playerController.PlayerPawn.Value.CameraServices!.ViewEntity.Raw = _camera.EntityHandle.Raw;
             CounterStrikeSharp.API.Utilities.SetStateChanged(playerController.PlayerPawn.Value, "CBasePlayerPawn", "m_pCameraServices");
-
-            _cameraProp.Teleport(CalculatePositionInFront(playerController, -110, 90), playerController.PlayerPawn.Value.V_angle, new Vector());
-
-            ThirdPersonPoolSmooth.Add(playerController, _cameraProp);
-        }
-        else
-        {
-            CDynamicProp? _cameraProp = CounterStrikeSharp.API.Utilities.CreateEntityByName<CDynamicProp>("prop_dynamic");
-
-            if (_cameraProp == null) return;
-
-            _cameraProp.DispatchSpawn();
-            _cameraProp.Render = Color.FromArgb(0, 0, 0, 0);
-
-            CounterStrikeSharp.API.Utilities.SetStateChanged(_cameraProp, "CBaseModelEntity", "m_clrRender");
-    
-            _cameraProp.Teleport(CalculatePositionInFront(playerController, -110, 90), playerController.PlayerPawn.Value!.V_angle, new Vector());
-
-            playerController.PlayerPawn!.Value!.CameraServices!.ViewEntity.Raw = _cameraProp.EntityHandle.Raw;
-
-            CounterStrikeSharp.API.Utilities.SetStateChanged(playerController.PlayerPawn!.Value!, "CBasePlayerPawn", "m_pCameraServices");
-
-            ThirdPersonPool.Add(playerController, _cameraProp);
-
-            RollTheDice.Instance!.AddTimer(0.5f, () =>
-            {
-                _cameraProp.Teleport(CalculatePositionInFront(playerController, -110, 90), playerController.PlayerPawn.Value.V_angle, new Vector());
-            });
-        }
+        });
     }
 
     public override void OnRemove(CCSPlayerController? playerController)
     {
         if (playerController == null)  return;
 
-        if(!RawParameters.TryGetValue("smoothCamera", out var smoothCameraStr))
-            return;
+        if (!ThirdPersonPool.TryGetValue(playerController, out var _camera)) return;
 
-        if(!bool.TryParse(smoothCameraStr, out var smoothCamera))
-            return;
-        
-        if (smoothCamera)
+        if (playerController.IsValid && playerController.PlayerPawn.Value?.CameraServices != null)
         {
-            playerController!.PlayerPawn!.Value!.CameraServices!.ViewEntity.Raw = uint.MaxValue;
-            RollTheDice.Instance!.AddTimer(0.3f, () => 
-                CounterStrikeSharp.API.Utilities.SetStateChanged(playerController.PlayerPawn!.Value!, "CBasePlayerPawn", "m_pCameraServices")
-            );
-            if (ThirdPersonPoolSmooth[playerController] != null && ThirdPersonPoolSmooth[playerController].IsValid)
-                ThirdPersonPoolSmooth[playerController].Remove();
+            playerController.PlayerPawn.Value.CameraServices.ViewEntity.Raw = uint.MaxValue;
+            RollTheDice.Instance!.AddTimer(0.3f, () =>
+            {
+                if (playerController.IsValid && playerController.PlayerPawn.Value != null)
+                    CounterStrikeSharp.API.Utilities.SetStateChanged(playerController.PlayerPawn.Value, "CBasePlayerPawn", "m_pCameraServices");
+            });
         }
-        else
-        {
-            playerController!.PlayerPawn!.Value!.CameraServices!.ViewEntity.Raw = uint.MaxValue;
-            RollTheDice.Instance!.AddTimer(0.3f, () => 
-                CounterStrikeSharp.API.Utilities.SetStateChanged(playerController.PlayerPawn!.Value!, "CBasePlayerPawn", "m_pCameraServices")
-            );
 
-            if (ThirdPersonPool[playerController] != null && ThirdPersonPool[playerController].IsValid) 
-                ThirdPersonPool[playerController].Remove();
-        }
+        if (_camera.IsValid)
+            _camera.Remove();
 
         ThirdPersonPool.Remove(playerController);
-        ThirdPersonPoolSmooth.Remove(playerController);
+        SmoothCameraPool.Remove(playerController);
     }
 
     #region Game Events
@@ -125,12 +88,12 @@ public class EffectThirdPerson : EffectBaseRegular, IEffectParameter
     {
         foreach (var player in ThirdPersonPool.Keys)
         {
-            UpdateCamera(ThirdPersonPool[player], player);
-        }
+            if (!player.IsValid || player.PlayerPawn.Value == null || !ThirdPersonPool[player].IsValid) continue;
 
-        foreach (var player in ThirdPersonPoolSmooth.Keys)
-        {
-            UpdateCameraSmooth(ThirdPersonPoolSmooth[player], player);
+            if (SmoothCameraPool.TryGetValue(player, out var smooth) && smooth)
+                UpdateCameraSmooth(ThirdPersonPool[player], player);
+            else
+                UpdateCamera(ThirdPersonPool[player], player);
         }
     }
     #endregion
@@ -160,43 +123,23 @@ public class EffectThirdPerson : EffectBaseRegular, IEffectParameter
 
         return positionInFront;
     }
-    public static Vector CalculateVelocity(Vector positionA, Vector positionB, float timeDuration)
+    public static void UpdateCamera (CPointCamera _camera, CCSPlayerController target)
     {
-        // Step 1: Determine direction from A to B
-        Vector directionVector = positionB - positionA;
-
-        // Step 2: Calculate distance between A and B
-        float distance = directionVector.Length();
-
-        // Step 3: Choose a desired time duration for the movement
-        // Ensure that timeDuration is not zero to avoid division by zero
-        if (timeDuration == 0)
-        {
-            timeDuration = 1;
-        }
-
-        // Step 4: Calculate velocity magnitude based on distance and time
-        float velocityMagnitude = distance / timeDuration;
-
-        // Step 5: Normalize direction vector
-        if (distance != 0)
-        {
-            directionVector /= distance;
-        }
-
-        // Step 6: Scale direction vector by velocity magnitude to get velocity vector
-        Vector velocityVector = directionVector * velocityMagnitude;
-
-        return velocityVector;
+        _camera.Teleport(CalculatePositionInFront(target, -110, 90), target.PlayerPawn.Value!.V_angle, new Vector());
     }
-    public static void UpdateCamera (CDynamicProp _cameraProp, CCSPlayerController target)
+    public static void UpdateCameraSmooth(CPointCamera _camera, CCSPlayerController target)
     {
-        _cameraProp.Teleport(CalculatePositionInFront(target, -110, 90), target.PlayerPawn.Value!.V_angle, new Vector());
-    }
-    public static void UpdateCameraSmooth(CPhysicsPropMultiplayer _cameraProp, CCSPlayerController target)
-    {
-        Vector velocity = CalculateVelocity(_cameraProp.AbsOrigin!, CalculatePositionInFront(target, -110, 90), 0.1f);
-        _cameraProp.Teleport(_cameraProp.AbsOrigin!, target.PlayerPawn.Value!.V_angle, velocity);
+        // Move 35% of the remaining distance every tick
+        const float lerpFactor = 0.35f;
+        Vector current = _camera.AbsOrigin!;
+        Vector targetPos = CalculatePositionInFront(target, -110, 90);
+        Vector smoothed = new Vector
+        {
+            X = current.X + (targetPos.X - current.X) * lerpFactor,
+            Y = current.Y + (targetPos.Y - current.Y) * lerpFactor,
+            Z = current.Z + (targetPos.Z - current.Z) * lerpFactor
+        };
+        _camera.Teleport(smoothed, target.PlayerPawn.Value!.V_angle, new Vector());
     }
 
     #endregion
