@@ -23,7 +23,7 @@ public class EffectInvisible : EffectBaseRegular, IEffectParameter, IEffectTimer
 
     public override void OnApply(CCSPlayerController? playerController)
     {
-        if (playerController == null || playerController.PlayerPawn.Value is null)  return;
+        if (playerController == null || playerController.Pawn.Value is null)  return;
         
         if(Timers.ContainsKey(playerController!.Handle))
         {
@@ -37,8 +37,9 @@ public class EffectInvisible : EffectBaseRegular, IEffectParameter, IEffectTimer
         if(!float.TryParse(durationStr, out var durationFloat))
             return;
 
-        playerController!.PlayerPawn.Value.Render = Color.FromArgb(0, 0, 0, 0);
+        playerController!.Pawn.Value.Render = Color.FromArgb(0, 0, 0, 0);
         playerController.RefreshUI();
+        playerController.Pawn.Value.AcceptInput("DisableShadow");
 
         bool freezeTime = Utilities.Helpers.IsFreezeTime();
         if (freezeTime)
@@ -81,12 +82,13 @@ public class EffectInvisible : EffectBaseRegular, IEffectParameter, IEffectTimer
 
     public void OnTimerEnd(CCSPlayerController playerController)
     {
-        if (playerController == null || playerController.PlayerPawn.Value is null)  return;
+        if (playerController == null || playerController.Pawn.Value is null)  return;
         if(!playerController!.IsValidPly())
             return;
 
-        playerController!.PlayerPawn.Value.Render = Color.FromArgb(255,255,255,255);
+        playerController!.Pawn.Value.Render = Color.FromArgb(255,255,255,255);
         playerController.RefreshUI();
+        playerController.Pawn.Value.AcceptInput("EnableShadow");
         
         playerController.LogChat(GetEffectPrefix() + Log.GetLocalizedText(Log.GetEffectLocale(TranslationName, "end")));
     }
