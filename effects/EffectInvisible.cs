@@ -37,8 +37,7 @@ public class EffectInvisible : EffectBaseRegular, IEffectParameter, IEffectTimer
         if(!float.TryParse(durationStr, out var durationFloat))
             return;
 
-        playerController!.Pawn.Value.Render = Color.FromArgb(0, 0, 0, 0);
-        playerController.RefreshUI();
+        SetAlpha(playerController, 0);
         playerController.Pawn.Value.AcceptInput("DisableShadow");
 
         bool freezeTime = Utilities.Helpers.IsFreezeTime();
@@ -86,10 +85,31 @@ public class EffectInvisible : EffectBaseRegular, IEffectParameter, IEffectTimer
         if(!playerController!.IsValidPly())
             return;
 
-        playerController!.Pawn.Value.Render = Color.FromArgb(255,255,255,255);
-        playerController.RefreshUI();
+        SetAlpha(playerController, 255);
         playerController.Pawn.Value.AcceptInput("EnableShadow");
         
         playerController.LogChat(GetEffectPrefix() + Log.GetLocalizedText(Log.GetEffectLocale(TranslationName, "end")));
+    }
+
+    // Apply to the model and every carried weapon, otherwise the weapons are still visible
+    private static void SetAlpha(CCSPlayerController playerController, int alpha)
+    {
+        var pawn = playerController.Pawn.Value;
+        if (pawn == null || !pawn.IsValid) return;
+
+        pawn.Render = Color.FromArgb(alpha, 255, 255, 255);
+        CounterStrikeSharp.API.Utilities.SetStateChanged(pawn, "CBaseModelEntity", "m_clrRender");
+
+        var weapons = pawn.WeaponServices?.MyWeapons;
+        if (weapons == null) return;
+
+        foreach (var handle in weapons)
+        {
+            var weapon = handle.Value;
+            if (weapon == null || !weapon.IsValid) continue;
+
+            weapon.Render = Color.FromArgb(alpha, 255, 255, 255);
+            CounterStrikeSharp.API.Utilities.SetStateChanged(weapon, "CBaseModelEntity", "m_clrRender");
+        }
     }
 }
