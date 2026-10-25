@@ -15,8 +15,8 @@ public class EffectImposter : EffectBaseRegular, IEffectParameter, IEffectTimer
     public override bool ShowDescriptionOnRoll { get; set; } = false;
     public Dictionary<string, string> RawParameters {get; set;} = new();
     public Dictionary<nint, CounterStrikeSharp.API.Modules.Timers.Timer> Timers { get; set; } = new();
-    private const string DEFAULT_T_MODEL = "characters/models/tm_phoenix/tm_phoenix.vmdl";
-    private const string DEFAULT_CT_MODEL = "characters/models/ctm_sas/ctm_sas.vmdl";
+    private const string DEFAULT_T_MODEL = "agents/models/tm_phoenix/tm_phoenix.vmdl";
+    private const string DEFAULT_CT_MODEL = "agents/models/ctm_sas/ctm_sas.vmdl";
     private bool StartTimerOnFreezeEnd = false;
     private float TimerDuration = 0.0f;
     private bool ShouldTeleport = true;
