@@ -14,8 +14,8 @@ public class EffectInvisible : EffectBaseRegular, IEffectParameter, IEffectTimer
     public override bool ShowDescriptionOnRoll { get; set; } = false;
     public Dictionary<string, string> RawParameters { get; set; } = new();
     public Dictionary<nint, CounterStrikeSharp.API.Modules.Timers.Timer> Timers {get; set; } = new();
-    private bool StartTimerOnFreezeEnd = false;
-    private float TimerDuration = 0.0f;
+    // Players who rolled during freeze time, their timer starts on freeze end
+    private Dictionary<nint, float> PendingTimers = new();
     public override void Initialize()
     {
         RawParameters.Add("durationSeconds", "10");
@@ -25,7 +25,7 @@ public class EffectInvisible : EffectBaseRegular, IEffectParameter, IEffectTimer
     {
         if (playerController == null || playerController.Pawn.Value is null)  return;
         
-        if(Timers.ContainsKey(playerController!.Handle))
+        if(Timers.ContainsKey(playerController!.Handle) || PendingTimers.ContainsKey(playerController.Handle))
         {
             playerController.LogChat(GetEffectPrefix() + Log.GetLocalizedText("effect_already_applied"));
             return;
@@ -43,8 +43,7 @@ public class EffectInvisible : EffectBaseRegular, IEffectParameter, IEffectTimer
         bool freezeTime = Utilities.Helpers.IsFreezeTime();
         if (freezeTime)
         {
-            StartTimerOnFreezeEnd = true;
-            TimerDuration = durationFloat;
+            PendingTimers[playerController.Handle] = durationFloat;
         }
         else
         {
@@ -55,22 +54,24 @@ public class EffectInvisible : EffectBaseRegular, IEffectParameter, IEffectTimer
 
     public override void OnRemove(CCSPlayerController? playerController)
     {
-        if(Timers.TryGetValue(playerController!.Handle, out var timer))
-        {
-            OnTimerEnd(playerController);
+        if (playerController == null)  return;
 
+        bool active = PendingTimers.Remove(playerController.Handle);
+        if(Timers.TryGetValue(playerController.Handle, out var timer))
+        {
             timer.Kill();
-            Timers.Remove(playerController!.Handle);
+            Timers.Remove(playerController.Handle);
+            active = true;
         }
+
+        if (active)
+            OnTimerEnd(playerController);
     }
 
     public override void OnRoundFreezeEnd(CCSPlayerController? playerController)
     {
-        if (StartTimerOnFreezeEnd)
-        {
-            StartEffectTimer(playerController, TimerDuration);
-            StartTimerOnFreezeEnd = false;
-        }
+        if (playerController != null && PendingTimers.Remove(playerController.Handle, out var duration))
+            StartEffectTimer(playerController, duration);
     }
 
     public void StartEffectTimer (CCSPlayerController? playerController, float duration)

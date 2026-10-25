@@ -17,8 +17,8 @@ public class EffectImposter : EffectBaseRegular, IEffectParameter, IEffectTimer
     public Dictionary<nint, CounterStrikeSharp.API.Modules.Timers.Timer> Timers { get; set; } = new();
     private const string DEFAULT_T_MODEL = "agents/models/tm_phoenix/tm_phoenix.vmdl";
     private const string DEFAULT_CT_MODEL = "agents/models/ctm_sas/ctm_sas.vmdl";
-    private bool StartTimerOnFreezeEnd = false;
-    private float TimerDuration = 0.0f;
+    // Players who rolled during freeze time, their timer starts on freeze end
+    private Dictionary<nint, float> PendingTimers = new();
     private bool ShouldTeleport = true;
     public static Dictionary<CCSPlayerController, string> PlayerModel = new Dictionary<CCSPlayerController, string>();
     public override void Initialize()
@@ -31,7 +31,7 @@ public class EffectImposter : EffectBaseRegular, IEffectParameter, IEffectTimer
     {
         if (playerController == null || playerController.PlayerPawn.Value == null)  return;
 
-        if(Timers.ContainsKey(playerController!.Handle))
+        if(Timers.ContainsKey(playerController!.Handle) || PendingTimers.ContainsKey(playerController.Handle))
         {
             playerController.LogChat(GetEffectPrefix() + Log.GetLocalizedText("effect_already_applied"));
             return;
@@ -49,12 +49,11 @@ public class EffectImposter : EffectBaseRegular, IEffectParameter, IEffectTimer
         if(!bool.TryParse(teleportStr, out var teleportBool))
             return;
         
-        TimerDuration = durationFl;
         ShouldTeleport = teleportBool;
 
         string modelToSet = playerController.Team == CsTeam.CounterTerrorist ? DEFAULT_T_MODEL : DEFAULT_CT_MODEL;
 
-        PlayerModel.Add(playerController, Utilities.Helpers.GetModel(playerController));
+        PlayerModel[playerController] = Utilities.Helpers.GetModel(playerController);
 
         Server.NextFrame(() =>
         {
@@ -64,7 +63,7 @@ public class EffectImposter : EffectBaseRegular, IEffectParameter, IEffectTimer
         bool freezeTime = Utilities.Helpers.IsFreezeTime();
         if (freezeTime)
         {
-            StartTimerOnFreezeEnd = true;
+            PendingTimers[playerController.Handle] = durationFl;
         }
         else
         {
@@ -76,20 +75,26 @@ public class EffectImposter : EffectBaseRegular, IEffectParameter, IEffectTimer
 
     public override void OnRemove(CCSPlayerController? playerController)
     {
-        if(Timers.TryGetValue(playerController!.Handle, out var timer))
+        if (playerController == null)  return;
+
+        bool active = PendingTimers.Remove(playerController.Handle);
+        if(Timers.TryGetValue(playerController.Handle, out var timer))
         {
             timer.Kill();
-            Timers.Remove(playerController!.Handle);
+            Timers.Remove(playerController.Handle);
+            active = true;
         }
+
+        if (active)
+            OnTimerEnd(playerController);
     }
 
     public override void OnRoundFreezeEnd(CCSPlayerController? playerController)
     {
-        if (StartTimerOnFreezeEnd && playerController != null)
+        if (playerController != null && PendingTimers.Remove(playerController.Handle, out var duration))
         {
             if(ShouldTeleport)    Teleport(playerController);
-            StartEffectTimer(playerController, TimerDuration);
-            StartTimerOnFreezeEnd = false;
+            StartEffectTimer(playerController, duration);
         }
     }
 
@@ -101,17 +106,19 @@ public class EffectImposter : EffectBaseRegular, IEffectParameter, IEffectTimer
 
     public void OnTimerEnd(CCSPlayerController playerController)
     {
-        if(playerController == null || playerController.PlayerPawn.Value == null)   return;
+        if(playerController == null)   return;
+
+        if (!PlayerModel.Remove(playerController, out var model))
+            return;
 
         playerController.LogChat(GetEffectPrefix() + Log.GetLocalizedText(Log.GetEffectLocale(TranslationName, "end")));
 
         Server.NextFrame(() =>
         {
-            if (PlayerModel[playerController] != null)
-            {
-                playerController.PlayerPawn.Value.SetModel(PlayerModel[playerController]);
-                PlayerModel.Remove(playerController);
-            }
+            if (!playerController.IsValid || playerController.PlayerPawn.Value == null || string.IsNullOrEmpty(model))
+                return;
+
+            playerController.PlayerPawn.Value.SetModel(model);
         });
     }
 
