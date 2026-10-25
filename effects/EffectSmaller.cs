@@ -29,7 +29,7 @@ public class EffectSmaller : EffectBaseRegular, IEffectParameter
         if(!RawParameters.TryGetValue("scale", out var scale))
             return;
 
-        playerController.PlayerPawn.Value.Entity.EntityInstance.AddEntityIOEvent("SetScale", null, null, scale);
+        SetSize(playerController, scale);
 
         PrintDescription(playerController, TranslationName, scale);
     }
@@ -41,10 +41,25 @@ public class EffectSmaller : EffectBaseRegular, IEffectParameter
             playerController.PlayerPawn.Value.Entity == null
         )  return;
 
-        playerController.PlayerPawn.Value.Entity.EntityInstance.AddEntityIOEvent("SetScale", null, null, "1");
+        SetSize(playerController, "1");
     }
 
     public override void OnRoundFreezeEnd(CCSPlayerController? playerController)
     {
+    }
+
+    // Set the skeleton scale as well as SetScale, same as Kandru's ChangePlayerSize
+    // https://github.com/Kandru/cs2-roll-the-dice/blob/0863bbaff25201bd73186f4435ac0f2e8737bdca/src/dices/ChangePlayerSize.cs
+    private static void SetSize(CCSPlayerController playerController, string scale)
+    {
+        var pawn = playerController.PlayerPawn.Value;
+        if (pawn == null || !float.TryParse(scale, out var scaleFloat))  return;
+
+        var skeleton = pawn.CBodyComponent?.SceneNode?.GetSkeletonInstance();
+        if (skeleton != null)
+            skeleton.Scale = scaleFloat;
+
+        pawn.AcceptInput("SetScale", null, null, scale);
+        CounterStrikeSharp.API.Utilities.SetStateChanged(pawn, "CBaseEntity", "m_CBodyComponent");
     }
 }
