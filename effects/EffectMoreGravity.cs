@@ -28,7 +28,8 @@ public class EffectMoreGravity : EffectBaseRegular, IEffectParameter
         if(!float.TryParse(gravityStr, out var gravityFloat))
             return;
 
-        playerController!.PlayerPawn.Value.GravityScale *= gravityFloat;
+        // https://github.com/Kandru/cs2-roll-the-dice/blob/0863bbaff25201bd73186f4435ac0f2e8737bdca/src/dices/LowGravity.cs
+        playerController!.PlayerPawn.Value.ActualGravityScale = gravityFloat;
         PrintDescription(playerController, TranslationName, ((gravityFloat-1)*100f)+"%");
     }
 
@@ -36,7 +37,7 @@ public class EffectMoreGravity : EffectBaseRegular, IEffectParameter
     {
         if (playerController == null || playerController.PlayerPawn.Value is null)  return;
 
-        playerController!.PlayerPawn.Value.GravityScale = 1;
+        playerController!.PlayerPawn.Value.ActualGravityScale = 1;
     }
 
     public override void OnRoundFreezeEnd(CCSPlayerController? playerController)
