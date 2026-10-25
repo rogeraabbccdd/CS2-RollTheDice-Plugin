@@ -109,6 +109,8 @@ public class EffectManager
         attacker?.GetEventEffect<EventPlayerHurt>()?.OnEvent(@event, eventInfo);
         victim?.GetEventEffect<EventPlayerHurt>()?.OnEvent(@event, eventInfo);
 
+        EffectMoreSpeed.OnPlayerHurt(victim);
+
         return HookResult.Continue;
     }
 
