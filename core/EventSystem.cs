@@ -22,6 +22,7 @@ public class EventSystem
         _plugin.RegisterEventHandler<EventRoundFreezeEnd>(HandleRoundFreezeEnd);
         _plugin.RegisterEventHandler<EventPlayerHurt>(HandlePlayerHurt);
         _plugin.RegisterListener<Listeners.OnTick>(OnGameFrame);
+        _plugin.RegisterListener<Listeners.OnPlayerTakeDamagePre>(OnPlayerTakeDamagePre);
     }
 
     public HookResult HandlePlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo eventInfo)
@@ -65,5 +66,10 @@ public class EventSystem
     public void OnGameFrame()
     {
         _plugin.EffectManager!.OnGameFrame();
+    }
+
+    public HookResult OnPlayerTakeDamagePre(CCSPlayerPawn pawn, CTakeDamageInfo info)
+    {
+        return _plugin.EffectManager!.OnPlayerTakeDamagePre(pawn, info);
     }
 }

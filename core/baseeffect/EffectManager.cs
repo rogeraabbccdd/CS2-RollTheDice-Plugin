@@ -126,5 +126,10 @@ public class EffectManager
         EffectThirdPerson.OnGameFrame();
         EffectDoubleJump.OnGameFrame();
     }
+
+    public HookResult OnPlayerTakeDamagePre(CCSPlayerPawn pawn, CTakeDamageInfo info)
+    {
+        return EffectGodMode.OnPlayerTakeDamagePre(pawn, info);
+    }
     #endregion
 }

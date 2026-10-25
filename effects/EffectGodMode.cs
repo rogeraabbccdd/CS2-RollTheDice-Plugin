@@ -16,8 +16,10 @@ public class EffectGodMode : EffectBaseRegular, IEffectParameter, IEffectTimer
     public override bool ShowDescriptionOnRoll { get; set; } = false;
     public Dictionary<string, string> RawParameters { get; set; } = new();
     public Dictionary<IntPtr, CounterStrikeSharp.API.Modules.Timers.Timer> Timers { get; set; } = new();
-    private bool StartTimerOnFreezeEnd = false;
-    private float TimerDuration = 0.0f;
+    // Players who rolled during freeze time, their timer starts on freeze end
+    private Dictionary<nint, float> PendingTimers = new();
+    // Controller handles of players who can't take damage
+    public static HashSet<nint> GodModePlayers = new();
     public override void Initialize()
     {
         RawParameters.Add("durationSeconds", "10");
@@ -27,7 +29,7 @@ public class EffectGodMode : EffectBaseRegular, IEffectParameter, IEffectTimer
     {
         if (playerController == null || playerController.PlayerPawn.Value is null)  return;
 
-        if(Timers.ContainsKey(playerController!.Handle))
+        if(Timers.ContainsKey(playerController!.Handle) || PendingTimers.ContainsKey(playerController.Handle))
         {
             playerController.LogChat(GetEffectPrefix() + Log.GetLocalizedText("effect_already_applied"));
             return;
@@ -39,14 +41,12 @@ public class EffectGodMode : EffectBaseRegular, IEffectParameter, IEffectTimer
         if(!float.TryParse(durationStr, out var durationFl))
             return;
 
-        playerController!.PlayerPawn.Value.Health = (int)10e8;
-        playerController.RefreshUI();
+        GodModePlayers.Add(playerController.Handle);
 
         bool freezeTime = Utilities.Helpers.IsFreezeTime();
         if (freezeTime)
         {
-            StartTimerOnFreezeEnd = true;
-            TimerDuration = durationFl;
+            PendingTimers[playerController.Handle] = durationFl;
         }
         else
         {
@@ -58,20 +58,24 @@ public class EffectGodMode : EffectBaseRegular, IEffectParameter, IEffectTimer
 
     public override void OnRemove(CCSPlayerController? playerController)
     {
-        if(Timers.TryGetValue(playerController!.Handle, out var timer))
+        if (playerController == null)  return;
+
+        bool active = PendingTimers.Remove(playerController.Handle);
+        if(Timers.TryGetValue(playerController.Handle, out var timer))
         {
             timer.Kill();
-            Timers.Remove(playerController!.Handle);
+            Timers.Remove(playerController.Handle);
+            active = true;
         }
+
+        if (active)
+            OnTimerEnd(playerController);
     }
 
     public override void OnRoundFreezeEnd(CCSPlayerController? playerController)
     {
-        if (StartTimerOnFreezeEnd)
-        {
-            StartEffectTimer(playerController, TimerDuration);
-            StartTimerOnFreezeEnd = false;
-        }
+        if (playerController != null && PendingTimers.Remove(playerController.Handle, out var duration))
+            StartEffectTimer(playerController, duration);
     }
     public void StartEffectTimer (CCSPlayerController? playerController, float duration)
     {
@@ -80,21 +84,26 @@ public class EffectGodMode : EffectBaseRegular, IEffectParameter, IEffectTimer
     }
     public void OnTimerEnd(CCSPlayerController playerController)
     {
-        if (playerController == null || playerController.PlayerPawn.Value is null)  return;
+        if (playerController == null)  return;
 
-        if(!playerController!.IsValidPly() || !playerController!.IsAlive())
+        GodModePlayers.Remove(playerController.Handle);
+
+        if(!playerController.IsValidPly() || !playerController.IsAlive())
             return;
 
-        var plyHealth = playerController!.PlayerPawn.Value.Health;
-        var plyMaxHealth = playerController!.PlayerPawn.Value.MaxHealth;
-
-        if(plyHealth > plyMaxHealth)
-        {
-            playerController!.PlayerPawn.Value.Health = plyMaxHealth;
-        }
-
         playerController.LogChat(GetEffectPrefix() + Log.GetLocalizedText(Log.GetEffectLocale(TranslationName, "end")));
-        playerController.RefreshUI();
+    }
+
+    // Returning HookResult.Handled prevents the damage
+    public static HookResult OnPlayerTakeDamagePre(CCSPlayerPawn pawn, CTakeDamageInfo info)
+    {
+        if (GodModePlayers.Count == 0)  return HookResult.Continue;
+
+        var controller = pawn.Controller.Value;
+        if (controller == null || !GodModePlayers.Contains(controller.Handle))
+            return HookResult.Continue;
+
+        return HookResult.Handled;
     }
 
 }
