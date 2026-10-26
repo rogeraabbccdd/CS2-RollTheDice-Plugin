@@ -9,6 +9,7 @@ using Preach.CS2.Plugins.RollTheDiceV2.Core.BaseEffect;
 using System.Runtime.InteropServices;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Utils;
+using CounterStrikeSharp.API.Modules.Cvars;
 
 namespace Preach.CS2.Plugins.RollTheDiceV2.Utilities;
 
@@ -60,5 +61,21 @@ internal static class Helpers
         float dz = point2.Z - point1.Z;
 
         return (float)Math.Sqrt(dx * dx + dy * dy + dz * dz);
+    }
+
+    // Read the convar every time, it can be changed while the plugin is running
+    public static bool IsEnemy (CCSPlayerController player, CCSPlayerController other)
+    {
+        if (player == other)  return false;
+
+        var teammatesAreEnemies = ConVar.Find("mp_teammates_are_enemies")?.GetPrimitiveValue<bool>() ?? false;
+        return teammatesAreEnemies || player.TeamNum != other.TeamNum;
+    }
+
+    public static List<CCSPlayerController> GetEnemies (CCSPlayerController player)
+    {
+        return CounterStrikeSharp.API.Utilities.GetPlayers()
+            .Where(p => p.IsValid && (p.TeamNum == 2 || p.TeamNum == 3) && IsEnemy(player, p))
+            .ToList();
     }
 }

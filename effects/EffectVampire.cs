@@ -1,5 +1,4 @@
 using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Modules.Cvars;
 using Preach.CS2.Plugins.RollTheDiceV2.Core.BaseEffect;
 using Preach.CS2.Plugins.RollTheDiceV2.Utilities;
 
@@ -14,17 +13,9 @@ public class EffectVampire : EffectBaseEvent<EventPlayerHurt>, IEffectParameter
     public override bool ShowDescriptionOnRoll { get; set; } = true;
     public Dictionary<string, string> RawParameters { get; set; } = new();
 
-    private bool _allowTeamDamage = false;
-
     public override void Initialize()
     {
         RawParameters.Add("healthScaleFactor", "0.5");
-
-        var friendlyFire = ConVar.Find("mp_friendlyfire");
-        if(friendlyFire is null)
-            return;
-
-        _allowTeamDamage = friendlyFire.GetPrimitiveValue<bool>();
     }
 
     public override HookResult OnEvent(EventPlayerHurt @event, GameEventInfo eventInfo)
@@ -38,8 +29,12 @@ public class EffectVampire : EffectBaseEvent<EventPlayerHurt>, IEffectParameter
         if(!attackerController.IsValidPly() || victimController is {IsValid: false, PlayerPawn.IsValid: false})
             return HookResult.Continue;
 
-        // check if the attacker is the victim or if they are on the same team
-        if(attackerController == victimController || (!_allowTeamDamage && attackerController.TeamNum == victimController.TeamNum))
+        // OnEvent is also called when the victim has this effect, only the attacker should be affected
+        if(!IsActiveOn(attackerController))
+            return HookResult.Continue;
+
+        // Only heal from enemies, otherwise players can heal by shooting teammates when friendly fire is on
+        if(!Utilities.Helpers.IsEnemy(attackerController, victimController))
             return HookResult.Continue;
 
         if(!RawParameters.TryGetValue("healthScaleFactor", out string? healthScaledStr))

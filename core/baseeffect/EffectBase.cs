@@ -82,6 +82,12 @@ public abstract class EffectBase : IEffect
         effectTimers.Add(playerController!.Handle, timer);
     }
 
+    // Event effects are called for both attacker and victim, use this to check who has the effect
+    public bool IsActiveOn(CCSPlayerController? playerController)
+    {
+        return playerController != null && playerController.GetEffects().Contains(this);
+    }
+
     public string GetEffectPrefix()
     {
         return Log.GetLocalizedText("prefix_effect", PrettyName);

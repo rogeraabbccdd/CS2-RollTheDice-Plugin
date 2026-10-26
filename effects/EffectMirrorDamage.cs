@@ -7,7 +7,6 @@ namespace Preach.CS2.Plugins.RollTheDiceV2.Effects;
 
 public class EffectMirrorDamage : EffectBaseEvent<EventPlayerHurt>, IEffectParameter
 {
-    private bool _allowTeamDamage = false;
     public override bool Enabled { get; set; } = true;
     public override string PrettyName { get; set; } = "Mirror Damage";
     public override string TranslationName { get; set; } = "mirror_damage";
@@ -18,12 +17,6 @@ public class EffectMirrorDamage : EffectBaseEvent<EventPlayerHurt>, IEffectParam
     public override void Initialize()
     {
         RawParameters.Add("reflectedDamageScaleFactor", "0.5");
-
-        var friendlyFire = ConVar.Find("mp_friendlyfire");
-        if(friendlyFire is null)
-            return;
-
-        _allowTeamDamage = friendlyFire.GetPrimitiveValue<bool>();
     }
 
     public override HookResult OnEvent(EventPlayerHurt @event, GameEventInfo eventInfo)
@@ -37,8 +30,13 @@ public class EffectMirrorDamage : EffectBaseEvent<EventPlayerHurt>, IEffectParam
         if(!attackerController.IsValidPly() || victimController is {IsValid: false, PlayerPawn.IsValid: false})
             return HookResult.Continue;
 
-        // check if the attacker is the victim or if they are on the same team
-        if(attackerController == victimController || (!_allowTeamDamage && attackerController.TeamNum == victimController.TeamNum))
+        // OnEvent is also called when the victim has this effect, only the attacker should be affected
+        if(!IsActiveOn(attackerController))
+            return HookResult.Continue;
+
+        // Damage to teammates is only reflected when friendly fire is on, read every time since it can be changed
+        bool friendlyFire = ConVar.Find("mp_friendlyfire")?.GetPrimitiveValue<bool>() ?? false;
+        if(attackerController == victimController || (!friendlyFire && !Utilities.Helpers.IsEnemy(attackerController, victimController)))
             return HookResult.Continue;
 
         if(!RawParameters.TryGetValue("reflectedDamageScaleFactor", out string? healthScaledStr))
