@@ -86,5 +86,16 @@
   "effect_description_thirdperson": "視角變成第三人稱",
   "effect_name_vampire": "吸血",
   "effect_description_vampire": "你會從給予的傷害回復生命值",
-  "effect_event_vampire": "<font color=\"green\">+{0}HP</font>"
+  "effect_event_vampire": "<font color=\"green\">+{0}HP</font>",
+  "effect_name_double_money": "金錢加倍",
+  "effect_description_double_money": "你的金錢加倍成 {blue}${0}",
+  "effect_name_half_money": "金錢減半",
+  "effect_description_half_money": "你的金錢減半成 {blue}${0}",
+  "effect_name_robin_hood": "羅賓漢",
+  "effect_description_robin_hood": "你從 {blue}{1}{default} 身上偷走了 {blue}${0}",
+  "effect_failed_robin_hood": "沒有敵人有錢可以偷",
+  "effect_victim_robin_hood": "{blue}{0}{default} 從你身上偷走了 {blue}${1}",
+  "effect_name_tax": "繳稅",
+  "effect_description_tax": "你繳了 {blue}${0}{default} 的稅給敵隊",
+  "effect_event_tax": "你從 {blue}{0}{default} 的稅金分到了 {blue}${1}"
 }

@@ -86,5 +86,16 @@
   "effect_description_thirdperson": "Third Person View",
   "effect_name_vampire": "Vampire",
   "effect_description_vampire": "You will drain health from the player you harm",
-  "effect_event_vampire": "<font color=\"green\">+{0}HP</font>"
+  "effect_event_vampire": "<font color=\"green\">+{0}HP</font>",
+  "effect_name_double_money": "Double Money",
+  "effect_description_double_money": "Your money is doubled to {blue}${0}",
+  "effect_name_half_money": "Half Money",
+  "effect_description_half_money": "Your money is halved to {blue}${0}",
+  "effect_name_robin_hood": "Robin Hood",
+  "effect_description_robin_hood": "You stole {blue}${0}{default} from {blue}{1}",
+  "effect_failed_robin_hood": "No enemy has money to steal",
+  "effect_victim_robin_hood": "{blue}{0}{default} stole {blue}${1}{default} from you",
+  "effect_name_tax": "Tax",
+  "effect_description_tax": "You paid {blue}${0}{default} tax to the enemy team",
+  "effect_event_tax": "You received {blue}${1}{default} from {blue}{0}{default}'s tax"
 }

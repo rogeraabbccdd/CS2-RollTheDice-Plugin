@@ -63,6 +63,21 @@ internal static class Helpers
         return (float)Math.Sqrt(dx * dx + dy * dy + dz * dz);
     }
 
+    public static int GetMaxMoney ()
+    {
+        var maxMoney = ConVar.Find("mp_maxmoney");
+        return maxMoney?.GetPrimitiveValue<int>() ?? 16000;
+    }
+
+    // Works for bots too, RefreshUI only updates real players
+    public static void SetMoney (CCSPlayerController player, int amount)
+    {
+        if (player.InGameMoneyServices == null)  return;
+
+        player.InGameMoneyServices.Account = Math.Clamp(amount, 0, GetMaxMoney());
+        CounterStrikeSharp.API.Utilities.SetStateChanged(player, "CCSPlayerController", "m_pInGameMoneyServices");
+    }
+
     // Read the convar every time, it can be changed while the plugin is running
     public static bool IsEnemy (CCSPlayerController player, CCSPlayerController other)
     {
