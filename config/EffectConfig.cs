@@ -148,6 +148,14 @@ public class EffectConfig
 		{
 			foreach(EffectBase effect in effects)
 			{
+				// Effects that are not in the config file are disabled, e.g. new effects after an update
+				if(!Data.Effects.ContainsKey(effect.Name))
+				{
+					effect.Enabled = false;
+					effect.CumulativeProbability = EffectBase.TotalCumulativeProbability;
+					continue;
+				}
+
 				var enabledProperty = Helpers.GetJsonElement(effect, "Enabled");
 				if(enabledProperty != null)
 					effect.Enabled = ((JsonElement)enabledProperty).GetBoolean();
