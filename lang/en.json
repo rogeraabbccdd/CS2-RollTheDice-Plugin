@@ -97,5 +97,9 @@
   "effect_victim_robin_hood": "{blue}{0}{default} stole {blue}${1}{default} from you",
   "effect_name_tax": "Tax",
   "effect_description_tax": "You paid {blue}${0}{default} tax to the enemy team",
-  "effect_event_tax": "You received {blue}${1}{default} from {blue}{0}{default}'s tax"
+  "effect_event_tax": "You received {blue}${1}{default} from {blue}{0}{default}'s tax",
+  "effect_name_armor_break": "Armor Break",
+  "effect_description_armor_break": "Your armor and helmet are gone",
+  "effect_name_heavy_armor": "Heavy Armor",
+  "effect_description_heavy_armor": "Your armor is set to {blue}{0}{default} with a helmet"
 }
