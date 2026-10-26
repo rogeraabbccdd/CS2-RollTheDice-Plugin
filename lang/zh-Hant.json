@@ -110,6 +110,8 @@
   "effect_description_knockback_rounds": "打中敵人會把他擊退",
   "effect_name_knockback": "被擊退",
   "effect_description_knockback": "被敵人打中時會被擊退",
+  "effect_name_glass_cannon": "玻璃大砲",
+  "effect_description_glass_cannon": "造成和受到的傷害都變成 {blue}{0}{default} 倍",
   "effect_name_armor_break": "破甲",
   "effect_description_armor_break": "你的護甲和頭盔不見了",
   "effect_name_heavy_armor": "重甲",

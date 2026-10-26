@@ -155,7 +155,14 @@ public class EffectManager
 
     public HookResult OnPlayerTakeDamagePre(CCSPlayerPawn pawn, CTakeDamageInfo info)
     {
-        return EffectGodMode.OnPlayerTakeDamagePre(pawn, info);
+        // GodMode blocks the damage, no need to change it
+        var result = EffectGodMode.OnPlayerTakeDamagePre(pawn, info);
+        if (result != HookResult.Continue)
+            return result;
+
+        EffectGlassCannon.OnPlayerTakeDamagePre(pawn, info);
+
+        return HookResult.Continue;
     }
     #endregion
 }
