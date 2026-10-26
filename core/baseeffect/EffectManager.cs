@@ -152,6 +152,7 @@ public class EffectManager
         EffectHealthRegen.OnGameFrame();
         EffectIceSkating.OnGameFrame();
         EffectHeartbeatSensor.OnGameFrame();
+        EffectJetpack.OnGameFrame();
     }
 
     public HookResult OnPlayerTakeDamagePre(CCSPlayerPawn pawn, CTakeDamageInfo info)
