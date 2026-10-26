@@ -104,6 +104,8 @@
   "effect_description_ice_skating": "地面變得像冰一樣滑",
   "effect_name_no_hud": "沒有 HUD",
   "effect_description_no_hud": "你的 HUD 被隱藏了",
+  "effect_name_chicken_leader": "雞群領袖",
+  "effect_description_chicken_leader": "有 {blue}{0}{default} 隻雞跟著你",
   "effect_name_armor_break": "破甲",
   "effect_description_armor_break": "你的護甲和頭盔不見了",
   "effect_name_heavy_armor": "重甲",
