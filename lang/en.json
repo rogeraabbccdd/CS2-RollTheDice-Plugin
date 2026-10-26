@@ -11,6 +11,7 @@
   "dice_rolls_left": "You have {blue}{0}{default} rolls left for this round!",
   "dice_cant_roll_dead": "You cannot roll the dice while dead!",
   "dice_not_enough_money": "You need {blue}${0}{default} to roll the dice!",
+  "dice_no_effect_available": "No effect can be rolled right now!",
   "dice_wrong_team_t": "You can not roll as a {orange}{0}",
   "dice_wrong_team_ct": "You can not roll as a {blue}{0}",
   "dice_wrong_team_spec": "You can not roll as a {lightpurple}{0}",

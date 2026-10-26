@@ -8,7 +8,8 @@ namespace Preach.CS2.Plugins.RollTheDiceV2.Core.BaseEffect;
 public class EffectManager
 {
     private RollTheDice _plugin;
-    public Dictionary<ulong, EffectBase>? PlyActiveEffect = new();
+    // A player can have more than one effect when "Remove last effect on roll" is off
+    public Dictionary<ulong, List<EffectBase>>? PlyActiveEffect = new();
     public EffectManager(RollTheDice plugin)
     {
         _plugin = plugin;
@@ -24,13 +25,11 @@ public class EffectManager
         if(!plyController.IsValidPly())
             return;
 
-        var activeEffect = plyController.GetEffect();
-
-        if(activeEffect == null)
+        if(!PlyActiveEffect!.Remove(plyController.SteamID, out var activeEffects))
             return;
 
-        activeEffect.OnRemove(plyController);
-        PlyActiveEffect!.Remove(plyController.SteamID);
+        foreach(var activeEffect in activeEffects)
+            activeEffect.OnRemove(plyController);
     }
 
     public void RemoveActiveEffect(CCSPlayerController plyController)
@@ -53,20 +52,21 @@ public class EffectManager
 
         var plyID = plyController.SteamID;
 
-        if(PlyActiveEffect!.ContainsKey(plyID))
-            return;
+        if(!PlyActiveEffect!.TryGetValue(plyID, out var activeEffects))
+        {
+            activeEffects = new List<EffectBase>();
+            PlyActiveEffect.Add(plyID, activeEffects);
+        }
 
-        PlyActiveEffect.Add(plyID, effect);
+        activeEffects.Add(effect);
     }
 
-    public EffectBase? GetActiveEffect(CCSPlayerController plyController)
+    public IReadOnlyList<EffectBase> GetActiveEffects(CCSPlayerController plyController)
     {
-        var plyID = plyController.SteamID;
+        if(!PlyActiveEffect!.TryGetValue(plyController.SteamID, out var activeEffects))
+            return Array.Empty<EffectBase>();
 
-        if(!PlyActiveEffect!.ContainsKey(plyID))
-            return null;
-
-        return PlyActiveEffect[plyID];
+        return activeEffects;
     }
 
     #region Events
@@ -106,8 +106,11 @@ public class EffectManager
         var victim = @event.Userid;
         var attacker = @event.Attacker;
 
-        attacker?.GetEventEffect<EventPlayerHurt>()?.OnEvent(@event, eventInfo);
-        victim?.GetEventEffect<EventPlayerHurt>()?.OnEvent(@event, eventInfo);
+        foreach(var effect in attacker?.GetEventEffects<EventPlayerHurt>() ?? [])
+            effect.OnEvent(@event, eventInfo);
+
+        foreach(var effect in victim?.GetEventEffects<EventPlayerHurt>() ?? [])
+            effect.OnEvent(@event, eventInfo);
 
         EffectMoreSpeed.OnPlayerHurt(victim);
 
@@ -118,7 +121,8 @@ public class EffectManager
     {
         foreach (var player in CounterStrikeSharp.API.Utilities.GetPlayers())
         {
-            player?.GetEffect()?.OnRoundFreezeEnd(player);
+            foreach(var effect in player.GetEffects().ToList())
+                effect.OnRoundFreezeEnd(player);
         }
         return HookResult.Continue;
     }

@@ -52,23 +52,17 @@ public static class Extensions
         RollTheDice.Instance!.EffectManager!.RemoveActiveEffect(plyController);
     }
 
-    public static EffectBase? GetEffect(this CCSPlayerController plyController)
+    public static IReadOnlyList<EffectBase> GetEffects(this CCSPlayerController plyController)
     {
         if(!plyController.IsValidPly())
-            return null;
+            return Array.Empty<EffectBase>();
 
-        return RollTheDice.Instance!.EffectManager!.GetActiveEffect(plyController);
+        return RollTheDice.Instance!.EffectManager!.GetActiveEffects(plyController);
     }
 
-    public static IEffectGameEvent<TEvent>? GetEventEffect<TEvent>(this CCSPlayerController plyController) where TEvent : GameEvent
+    public static List<IEffectGameEvent<TEvent>> GetEventEffects<TEvent>(this CCSPlayerController plyController) where TEvent : GameEvent
     {
-        if(!plyController.IsValidPly())
-            return null;
-
-        if(RollTheDice.Instance!.EffectManager!.GetActiveEffect(plyController) is IEffectGameEvent<TEvent> effect)
-            return effect;
-
-        return null;
+        return plyController.GetEffects().OfType<IEffectGameEvent<TEvent>>().ToList();
     }
 
     public static void GiveWeapon(this CCSPlayerController? plyController, string weaponName = "weapon_knife")

@@ -108,10 +108,17 @@ public class DiceSystem
         if(!plyController.IsValidPly() || !CheckTeamAndLifeState(plyController) || !HasEnoughMoney(plyController) || !CanRoll(plyController))
             return;
 
+        var effect = GetEffectByRoll(plyController);
+        if(effect == null)
+        {
+            plyController.LogChat(Log.GetLocalizedText("dice_no_effect_available"), LogType.INFO);
+            return;
+        }
+
         plyController.InGameMoneyServices!.Account -= _plugin.Config!.MoneyToRoll;
         plyController.RefreshUI();
 
-        RollAndApplyEffect(plyController, -1);
+        ApplyEffect(plyController, effect);
     }
 
     private bool HasEnoughMoney (CCSPlayerController plyController)
@@ -130,7 +137,7 @@ public class DiceSystem
         return true;
     }
 
-    private EffectBase? GetEffectByRoll()
+    private EffectBase? GetEffectByRoll(CCSPlayerController plyController)
     {
         var effectsList = EffectBase.Effects;
 
@@ -140,12 +147,29 @@ public class DiceSystem
             return null;
         }
 
-        double roll = Random.Shared.NextDouble() * EffectBase.TotalCumulativeProbability;
+        var candidates = effectsList
+                .Where(e => e.Enabled && e.Probability > 0 && CanBeRolled(plyController, e))
+                .ToList();
 
-        return effectsList
-                .Where(e => e.Enabled)
-                .OrderBy(e => e.CumulativeProbability)
-                .FirstOrDefault(e => roll <= e.CumulativeProbability);
+        double roll = Random.Shared.NextDouble() * candidates.Sum(e => e.Probability);
+
+        foreach(var effect in candidates)
+        {
+            roll -= effect.Probability;
+            if(roll <= 0)
+                return effect;
+        }
+
+        return candidates.LastOrDefault();
+    }
+
+    // Effects that are still active can't be rolled again, unless they are repeatable or will be removed first
+    private bool CanBeRolled(CCSPlayerController plyController, EffectBase effect)
+    {
+        if(_plugin.Config!.RemoveLastEffect || effect.Repeatable)
+            return true;
+
+        return !plyController.GetEffects().Contains(effect);
     }
 
     private EffectBase? GetEffectByNumber(int number)
@@ -160,7 +184,7 @@ public class DiceSystem
 
         return effectsList
                 .Where(e => e.RollNumber == number)
-                .First();
+                .FirstOrDefault();
     }
 
     private void BroadOrUnicastRollMessages(CCSPlayerController target, EffectBase effect)
@@ -201,23 +225,22 @@ public class DiceSystem
         if(!plyController.IsValidPly())
             return;
         
-        EffectBase? effect = number == -1 ? GetEffectByRoll() : GetEffectByNumber(number);
+        EffectBase? effect = number == -1 ? GetEffectByRoll(plyController) : GetEffectByNumber(number);
 
         if(effect == null)
             return;
 
-        var plyID = plyController.SteamID;
+        ApplyEffect(plyController, effect);
+    }
 
-        var plyActiveEffect = RollTheDice.Instance!.EffectManager!.PlyActiveEffect;
-        if(plyActiveEffect!.ContainsKey(plyID))
-        {
-            if(_plugin.Config.RemoveLastEffect)
-                plyActiveEffect[plyID]!.OnRemove(plyController);
+    private void ApplyEffect(CCSPlayerController plyController, EffectBase effect)
+    {
+        var effectManager = RollTheDice.Instance!.EffectManager!;
 
-            plyActiveEffect[plyID] = effect;
-        }
-        else
-            plyActiveEffect.Add(plyID, effect);
+        if(_plugin.Config.RemoveLastEffect)
+            effectManager.RemoveOrResetPlyActiveEffects(plyController);
+
+        effectManager.AddActiveEffect(plyController, effect);
 
         BroadOrUnicastRollMessages(plyController, effect);
 

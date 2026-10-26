@@ -9,6 +9,8 @@ public class EffectGetHealthShot : EffectBaseRegular
     public override string PrettyName { get; set; } = "Healthshot";
     public override string TranslationName { get; set; } = "healthshot";
     public override double Probability { get; set; } = 2;
+    // Applies once, so rolling it again while it is active is fine
+    public override bool Repeatable => true;
     public override bool ShowDescriptionOnRoll { get; set; } = true;
 
     public override void Initialize()

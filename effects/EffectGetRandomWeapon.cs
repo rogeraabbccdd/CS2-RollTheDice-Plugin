@@ -11,6 +11,8 @@ public class EffectGetRandomWeapon : EffectBaseRegular, IEffectParameter
     public override string PrettyName { get; set; } = "Get Random Weapon";
     public override string TranslationName { get; set; } = "get_random_weapon";
     public override double Probability { get; set; } = 3;
+    // Applies once, so rolling it again while it is active is fine
+    public override bool Repeatable => true;
     public override bool ShowDescriptionOnRoll { get; set; } = false;
     public Dictionary<string, string> RawParameters {get; set; } = new();
 

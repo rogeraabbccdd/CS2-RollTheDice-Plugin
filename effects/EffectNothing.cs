@@ -10,6 +10,8 @@ public class EffectNothing : EffectBaseRegular
     public override string PrettyName { get; set; } = "Nothing";
     public override string TranslationName { get; set; } = "nothing";
     public override double Probability { get; set; } = 3;
+    // Applies once, so rolling it again while it is active is fine
+    public override bool Repeatable => true;
     public override bool ShowDescriptionOnRoll { get; set; } = true;
 
     public override void Initialize()

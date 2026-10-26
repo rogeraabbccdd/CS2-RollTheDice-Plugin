@@ -10,6 +10,8 @@ public class EffectLessHealth : EffectBaseRegular, IEffectParameter
     public override string PrettyName { get; set; } = "Less Health";
     public override string TranslationName { get; set; } = "less_health";
     public override double Probability { get; set; } = 3;
+    // Applies once, so rolling it again while it is active is fine
+    public override bool Repeatable => true;
     public override bool ShowDescriptionOnRoll { get; set; } = false;
     public Dictionary<string, string> RawParameters { get; set; } = new();
 

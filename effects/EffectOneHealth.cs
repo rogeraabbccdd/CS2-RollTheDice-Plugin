@@ -10,6 +10,8 @@ public class EffectOneHealth : EffectBaseRegular
     public override string PrettyName { get; set; } = "1 HP";
     public override string TranslationName { get; set; } = "one_health";
     public override double Probability { get; set; } = 1;
+    // Applies once, so rolling it again while it is active is fine
+    public override bool Repeatable => true;
     public override bool ShowDescriptionOnRoll { get; set; } = true;
 
     public override void Initialize()

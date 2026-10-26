@@ -11,6 +11,8 @@ public class EffectLooseRandomWeapon : EffectBaseRegular
     public override string PrettyName {get; set; } = "Loose Random Weapon";
     public override string TranslationName { get; set; } = "loose_random_weapon";
     public override double Probability { get; set; } = 3;
+    // Applies once, so rolling it again while it is active is fine
+    public override bool Repeatable => true;
     public override bool ShowDescriptionOnRoll { get; set; } = false;
 
     public override void Initialize()

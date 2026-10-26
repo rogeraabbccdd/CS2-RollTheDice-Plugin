@@ -40,6 +40,9 @@ public abstract class EffectBase : IEffect
     // Probability is used to determine the chance of an effect being rolled
     public abstract double Probability { get; set; }
 
+    // Repeatable effects can be rolled again while the player still has them, e.g. effects that apply once
+    public virtual bool Repeatable => false;
+
     // RemoveEffect is used to remove the effect from the player
     public abstract void OnRemove(CCSPlayerController? playerController);
 

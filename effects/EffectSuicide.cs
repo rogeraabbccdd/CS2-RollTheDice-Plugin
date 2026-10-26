@@ -11,6 +11,8 @@ public class EffectSuicide : EffectBaseRegular
     public override string PrettyName { get; set; } = "Suicide";
     public override string TranslationName { get; set; } = "suicide";
     public override double Probability { get; set; } = 1;
+    // Applies once, so rolling it again while it is active is fine
+    public override bool Repeatable => true;
     public override bool ShowDescriptionOnRoll { get; set; } = true;
     private bool SuicideOnFreezeEnd = false;
 
