@@ -12,6 +12,7 @@ public class EffectMoreSpeed : EffectBaseRegular, IEffectParameter
     public override string PrettyName { get; set; } = "More Speed";
     public override string TranslationName { get; set; } = "more_speed";
     public override double Probability { get; set; } = 2;
+    public override string? ConflictGroup => "speed";
     public Dictionary<string, string> RawParameters {get; set; } = new();
     public override bool ShowDescriptionOnRoll { get; set; } = false;
     // VelocityModifier is reset when the player gets hit, so the speed has to be applied again

@@ -61,6 +61,23 @@ public class EffectManager
         activeEffects.Add(effect);
     }
 
+    // The new effect replaces active effects of the same conflict group, e.g. More Speed replaces Less Speed
+    public void RemoveConflictingEffects(CCSPlayerController plyController, EffectBase effect)
+    {
+        if(effect.ConflictGroup == null || !PlyActiveEffect!.TryGetValue(plyController.SteamID, out var activeEffects))
+            return;
+
+        var conflicting = activeEffects
+            .Where(e => e != effect && e.ConflictGroup == effect.ConflictGroup)
+            .ToList();
+
+        foreach(var activeEffect in conflicting)
+        {
+            activeEffect.OnRemove(plyController);
+            activeEffects.Remove(activeEffect);
+        }
+    }
+
     public IReadOnlyList<EffectBase> GetActiveEffects(CCSPlayerController plyController)
     {
         if(!PlyActiveEffect!.TryGetValue(plyController.SteamID, out var activeEffects))

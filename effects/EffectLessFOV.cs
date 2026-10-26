@@ -10,6 +10,7 @@ public class EffectLessFOV : EffectBaseRegular, IEffectParameter
     public override string PrettyName { get; set; } = "Less FOV";
     public override string TranslationName { get; set; } = "less_fov";
     public override double Probability { get; set; } = 2;
+    public override string? ConflictGroup => "fov";
     public override bool ShowDescriptionOnRoll { get; set; } = false;
     public Dictionary<string, string> RawParameters { get; set; } = new();
 

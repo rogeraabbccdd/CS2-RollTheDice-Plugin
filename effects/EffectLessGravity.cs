@@ -10,6 +10,7 @@ public class EffectLessGravity : EffectBaseRegular, IEffectParameter
     public override string PrettyName { get; set; } = "Less Gravity";
     public override string TranslationName { get; set; } = "less_gravity";
     public override double Probability { get; set; } = 2;
+    public override string? ConflictGroup => "gravity";
     public override bool ShowDescriptionOnRoll { get; set; } = false;
     public Dictionary<string, string> RawParameters { get; set; } = new();
 

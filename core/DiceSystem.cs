@@ -239,6 +239,8 @@ public class DiceSystem
 
         if(_plugin.Config.RemoveLastEffect)
             effectManager.RemoveOrResetPlyActiveEffects(plyController);
+        else
+            effectManager.RemoveConflictingEffects(plyController, effect);
 
         effectManager.AddActiveEffect(plyController, effect);
 

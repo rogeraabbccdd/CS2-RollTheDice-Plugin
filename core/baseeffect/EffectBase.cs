@@ -43,6 +43,9 @@ public abstract class EffectBase : IEffect
     // Repeatable effects can be rolled again while the player still has them, e.g. effects that apply once
     public virtual bool Repeatable => false;
 
+    // Effects in the same conflict group can't be active together, the newly applied one replaces the old one
+    public virtual string? ConflictGroup => null;
+
     // RemoveEffect is used to remove the effect from the player
     public abstract void OnRemove(CCSPlayerController? playerController);
 

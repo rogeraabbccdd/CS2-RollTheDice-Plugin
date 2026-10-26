@@ -11,6 +11,7 @@ public class EffectSmaller : EffectBaseRegular, IEffectParameter
     public override string PrettyName { get; set; } = "Smaller";
     public override string TranslationName { get; set; } = "smaller";
     public override double Probability { get; set; } = 1;
+    public override string? ConflictGroup => "size";
     public Dictionary<string, string> RawParameters {get; set; } = new();
     public override bool ShowDescriptionOnRoll { get; set; } = false;
 
