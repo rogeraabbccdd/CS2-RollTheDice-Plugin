@@ -130,6 +130,7 @@ public class EffectManager
             effect.OnEvent(@event, eventInfo);
 
         EffectMoreSpeed.OnPlayerHurt(victim);
+        EffectHealthRegen.OnPlayerHurt(victim);
 
         return HookResult.Continue;
     }
@@ -148,6 +149,7 @@ public class EffectManager
     {
         EffectThirdPerson.OnGameFrame();
         EffectDoubleJump.OnGameFrame();
+        EffectHealthRegen.OnGameFrame();
     }
 
     public HookResult OnPlayerTakeDamagePre(CCSPlayerPawn pawn, CTakeDamageInfo info)

@@ -87,6 +87,8 @@
   "effect_name_vampire": "Vampire",
   "effect_description_vampire": "You will drain health from the player you harm",
   "effect_event_vampire": "<font color=\"green\">+{0}HP</font>",
+  "effect_name_health_regen": "Health Regen",
+  "effect_description_health_regen": "Regenerate {blue}{0}{default} HP per second after {blue}{1}{default} seconds without damage",
   "effect_name_double_money": "Double Money",
   "effect_description_double_money": "Your money is doubled to {blue}${0}",
   "effect_name_half_money": "Half Money",

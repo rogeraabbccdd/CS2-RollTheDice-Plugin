@@ -87,6 +87,8 @@
   "effect_name_vampire": "吸血",
   "effect_description_vampire": "你會從給予的傷害回復生命值",
   "effect_event_vampire": "<font color=\"green\">+{0}HP</font>",
+  "effect_name_health_regen": "自動回血",
+  "effect_description_health_regen": "{blue}{1}{default} 秒沒有受傷後，每秒回復 {blue}{0}{default} HP",
   "effect_name_double_money": "金錢加倍",
   "effect_description_double_money": "你的金錢加倍成 {blue}${0}",
   "effect_name_half_money": "金錢減半",
