@@ -135,6 +135,14 @@ public class EffectManager
         return HookResult.Continue;
     }
 
+    public HookResult HandleWeaponFire(EventWeaponFire @event, GameEventInfo eventInfo)
+    {
+        foreach(var effect in @event.Userid?.GetEventEffects<EventWeaponFire>() ?? [])
+            effect.OnEvent(@event, eventInfo);
+
+        return HookResult.Continue;
+    }
+
     public HookResult HandleRoundFreezeEnd (EventRoundFreezeEnd @event, GameEventInfo eventInfo)
     {
         foreach (var player in CounterStrikeSharp.API.Utilities.GetPlayers())

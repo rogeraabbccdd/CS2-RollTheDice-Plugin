@@ -21,6 +21,7 @@ public class EventSystem
         _plugin.RegisterEventHandler<EventRoundStart>(HandleRoundStart);
         _plugin.RegisterEventHandler<EventRoundFreezeEnd>(HandleRoundFreezeEnd);
         _plugin.RegisterEventHandler<EventPlayerHurt>(HandlePlayerHurt);
+        _plugin.RegisterEventHandler<EventWeaponFire>(HandleWeaponFire);
         _plugin.RegisterListener<Listeners.OnTick>(OnGameFrame);
         _plugin.RegisterListener<Listeners.OnPlayerTakeDamagePre>(OnPlayerTakeDamagePre);
     }
@@ -60,6 +61,12 @@ public class EventSystem
     {
         _plugin.EffectManager!.HandlePlayerHurt(@event, eventInfo);
 
+        return HookResult.Continue;
+    }
+
+    public HookResult HandleWeaponFire(EventWeaponFire @event, GameEventInfo eventInfo)
+    {
+        _plugin.EffectManager!.HandleWeaponFire(@event, eventInfo);
         return HookResult.Continue;
     }
 

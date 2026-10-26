@@ -119,6 +119,8 @@
   "effect_name_jetpack": "Jetpack",
   "effect_description_jetpack": "Hold jump in the air to fly, fuel refills on the ground",
   "effect_event_jetpack": "Fuel",
+  "effect_name_rocket_jump": "Rocket Jump",
+  "effect_description_rocket_jump": "Every shot pushes you back, shoot at the ground to fly",
   "effect_name_armor_break": "Armor Break",
   "effect_description_armor_break": "Your armor and helmet are gone",
   "effect_name_heavy_armor": "Heavy Armor",
