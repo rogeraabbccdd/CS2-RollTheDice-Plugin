@@ -150,6 +150,7 @@ public class EffectManager
         EffectThirdPerson.OnGameFrame();
         EffectDoubleJump.OnGameFrame();
         EffectHealthRegen.OnGameFrame();
+        EffectIceSkating.OnGameFrame();
     }
 
     public HookResult OnPlayerTakeDamagePre(CCSPlayerPawn pawn, CTakeDamageInfo info)

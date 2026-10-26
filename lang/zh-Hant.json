@@ -100,6 +100,8 @@
   "effect_name_tax": "繳稅",
   "effect_description_tax": "你繳了 {blue}${0}{default} 的稅給敵隊",
   "effect_event_tax": "你從 {blue}{0}{default} 的稅金分到了 {blue}${1}",
+  "effect_name_ice_skating": "溜冰",
+  "effect_description_ice_skating": "地面變得像冰一樣滑",
   "effect_name_armor_break": "破甲",
   "effect_description_armor_break": "你的護甲和頭盔不見了",
   "effect_name_heavy_armor": "重甲",
